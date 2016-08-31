@@ -1,4 +1,5 @@
 require 'identity/importer/tasks/civicrm/mailings'
+require 'identity/importer/tasks/actionkit/mailings'
 
 module Identity
   module Importer
