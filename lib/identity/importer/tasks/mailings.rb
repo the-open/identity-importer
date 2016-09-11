@@ -16,7 +16,7 @@ module Identity
         ]
 
         def self.run
-          Identity::Importer.connection.run_query(self::SQL).each do |row|
+          Identity::Importer.connection.run_query(sql).each do |row|
             mailing = Mailing.find_or_initialize_by(external_id: row['external_id'])
             if mailing.new_record?
               mailing.attributes = row.select do |column_name, value|
