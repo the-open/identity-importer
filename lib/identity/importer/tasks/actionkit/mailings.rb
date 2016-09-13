@@ -18,10 +18,10 @@ module Identity
                 m.created_at,
                 m.queued_at as sent_at,
                 count(um.user_id) as member_count
-                FROM core_mailing m LEFT JOIN core_fromline f on (f.id=m.fromline_id)
+              FROM core_mailing m LEFT JOIN core_fromline f on (f.id=m.fromline_id)
                 LEFT JOIN core_usermailing um on (m.id=um.mailing_id)
                 LEFT JOIN core_mailingsubject s on (s.mailing_id=m.id)
-                GROUP BY m.id;
+              GROUP BY m.id;
             }
           end
 
