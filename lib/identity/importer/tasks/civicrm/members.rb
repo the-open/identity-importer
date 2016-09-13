@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Members < Identity::Importer::Tasks::Members
 
-          def self.sql(mailing)
+          def self.sql(members)
             %{
               SELECT
                 e.email as email,
@@ -16,14 +16,10 @@ module Identity
                 addr.postal_code as postcode,
                 c.created_date as created_at,
                 c.modified_date as updated_at
-                FROM civicrm_mailing m JOIN civicrm_mailing_job job ON m.id = job.mailing_id
-                JOIN civicrm_mailing_event_queue q ON q.job_id = job.id
-                JOIN civicrm_email e ON q.email_id = e.id
-                JOIN civicrm_contact c ON q.contact_id = c.id
+                FROM civicrm_email e JOIN
+                JOIN civicrm_contact c ON e.contact_id = c.id
                 LEFT JOIN civicrm_address addr ON c.id = addr.contact_id
-                WHERE job.job_type = 'child'
-                AND m.id = #{mailing.external_id}
-                ORDER BY q.id ASC
+                ORDER BY c.id ASC
             }
           end
 
