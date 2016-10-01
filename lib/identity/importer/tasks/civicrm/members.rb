@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Members < Identity::Importer::Tasks::Members
 
-          def self.sql(members)
+          def self.sql
             %{
               SELECT
                 c.id as contact_id,
@@ -16,8 +16,7 @@ module Identity
                 addr.postal_code as postcode,
                 c.created_date as created_at,
                 c.modified_date as updated_at
-              FROM civicrm_email e JOIN
-                JOIN civicrm_contact c ON e.contact_id = c.id
+                FROM civicrm_email e JOIN civicrm_contact c ON e.contact_id = c.id
                 LEFT JOIN civicrm_address addr ON c.id = addr.contact_id
             }
           end

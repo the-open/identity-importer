@@ -6,7 +6,7 @@ module Identity
       module ActionKit
         class Members < Identity::Importer::Tasks::Members
 
-          def self.sql(members)
+          def self.sql
             %{
               SELECT
                 u.email as email,
