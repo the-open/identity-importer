@@ -1,3 +1,5 @@
+require 'activerecord-import'
+
 module Identity
   module Importer
     module Tasks
@@ -10,6 +12,7 @@ module Identity
             mailing_members = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
             ActiveRecord::Base.transaction do
+              member_mailings = []
               mailing_members.each do |mailing_member|
                 member = Member.find_by(email: mailing_member['email'])
                 member_id = member.try(:id) || 1
@@ -20,12 +23,14 @@ module Identity
                   'member_id' => member_id,
                   'external_id' => mailing_member['id']
                 }
-                member_mailing.save!
+
+                member_mailings << member_mailing
               end
+              MemberMailing.import member_mailings
+
               mailing.recipients_synced = true
               mailing.save!
             end
-
           end
 
         end
