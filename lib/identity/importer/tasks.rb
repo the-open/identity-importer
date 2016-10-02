@@ -1,10 +1,12 @@
 require 'identity/importer/tasks/civicrm/mailings'
 require 'identity/importer/tasks/civicrm/members'
 require 'identity/importer/tasks/civicrm/mailing_members'
+require 'identity/importer/tasks/civicrm/opens'
 
 require 'identity/importer/tasks/actionkit/mailings'
 require 'identity/importer/tasks/actionkit/members'
 require 'identity/importer/tasks/actionkit/mailing_members'
+require 'identity/importer/tasks/actionkit/opens'
 
 module Identity
   module Importer
