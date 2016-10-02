@@ -1,3 +1,5 @@
+require 'activerecord-import'
+
 module Identity
   module Importer
     module Tasks
@@ -7,6 +9,7 @@ module Identity
           members = Identity::Importer.connection.run_query(sql)
 
           ActiveRecord::Base.transaction do
+            new_members = []
             members.each do |member_data|
               data = {
                 name: (member_data['firstname'] or '(none)')+' '+(member_data['lastname'] or '(none)'),
@@ -19,9 +22,10 @@ module Identity
 
               if member.new_record?
                 member.attributes = data
-                member.save!
               end
+              new_members << member
             end
+            Member.import new_members
           end
 
         end

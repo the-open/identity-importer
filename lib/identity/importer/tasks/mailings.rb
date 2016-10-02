@@ -1,3 +1,5 @@
+require 'activerecord-import'
+
 module Identity
   module Importer
     module Tasks
@@ -16,7 +18,10 @@ module Identity
         ]
 
         def self.run
+          mailings = []
           Identity::Importer.connection.run_query(sql).each do |row|
+            puts "Importing mailing with ID #{row['external_id']}"
+
             mailing = Mailing.find_or_initialize_by(external_id: row['external_id'])
             if mailing.new_record?
               mailing.attributes = row.select do |column_name, value|
@@ -25,8 +30,9 @@ module Identity
             end
 
             mailing.recipients_synced = false
-            mailing.save!
+            mailings << mailing
           end
+          Mailing.import mailings
         end
 
       end
