@@ -29,6 +29,7 @@ module Identity
               MemberMailing.import member_mailings
 
               mailing.recipients_synced = true
+              mailing.member_count = member_mailings.count
               mailing.save!
             end
           end
