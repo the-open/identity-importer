@@ -3,12 +3,14 @@ require 'identity/importer/tasks/civicrm/members'
 require 'identity/importer/tasks/civicrm/mailing_members'
 require 'identity/importer/tasks/civicrm/opens'
 require 'identity/importer/tasks/civicrm/clicks'
+require 'identity/importer/tasks/civicrm/campaigns'
 
 require 'identity/importer/tasks/actionkit/mailings'
 require 'identity/importer/tasks/actionkit/members'
 require 'identity/importer/tasks/actionkit/mailing_members'
 require 'identity/importer/tasks/actionkit/opens'
 require 'identity/importer/tasks/actionkit/clicks'
+require 'identity/importer/tasks/actionkit/campaigns'
 
 module Identity
   module Importer

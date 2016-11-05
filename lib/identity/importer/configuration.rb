@@ -7,6 +7,7 @@ module Identity
       attr_accessor :database_password
       attr_accessor :database_port
       attr_accessor :database_user
+      attr_accessor :campaign_types
 
       def initialize
         @database_adapter = ""
@@ -15,6 +16,7 @@ module Identity
         @database_password = ""
         @database_port = "3306"
         @database_user = ""
+        @campaign_types = []
       end
 
       def valid_database_config?

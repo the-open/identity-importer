@@ -23,7 +23,7 @@ module Identity
             raise ArgumentError, "Unsupported database adapter"
           end
         else
-          raise ArgumentError, "database configuration is not valid"
+          raise ArgumentError, "Database configuration is not valid"
         end
 
       end
