@@ -11,6 +11,7 @@ module Identity
           'subject',      # the subject line (or lines)
           'body_html',    #
           'body_plain',   #
+          'campaign_id',
           'from',         # the fromline
           'created_at',   # when the mailing object was created
           'sent_at',      # when you actually hit send on the mailing
