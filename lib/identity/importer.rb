@@ -2,6 +2,7 @@ require 'identity/importer/connection'
 require 'identity/importer/configuration'
 require 'identity/importer/tasks'
 require 'identity/importer/version'
+require 'identity/importer/utils'
 
 module Identity
   module Importer
