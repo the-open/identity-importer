@@ -46,6 +46,37 @@ bundle exec rake identity_importer:run
 
 This rake task can be found at `identity-app/tasks/identity_importer.rake`. The order in the rake task is the suggested order. You can enable and disable tasks by editing the file.
 
+## Extending the Gem
+
+### Database
+To add support for a new database, you need to do the following steps:
+
+1. Update `Gemfile` with the required dependencies.
+1. Edit `lib/identity/importer/connection.rb` and do the following:
+  * Add a new case for the name of the database adapter (example "postgresql" or "sqlite")
+  * Create a `@client` object with the established connection
+  * Update the `run_query` method if required
+1. If the new adapter requires more or less configuration:
+  * Update `lib/identity/importer/configuration.rb` to support the new variables
+  * Update `valid_database_config?` method in the same class to support the new variables
+
+Update the configuration in the identity app with the required configuration changes.
+
+### Task Run List
+
+To modify the task run list edit the rake file in the identity app (not this gem). You can find the file at `identity-app/tasks/identity_importer.rake`
+
+### New source database schemas
+
+To add support for a new type of database schema you need to create task files that inherit from the base task files. For example look at the various files in `lib/identity/importer/tasks/civicrm/`
+
+1. Maintain the current structure of the gem and create a new folder in `lib/identity/importer/tasks/`
+1. Create a new class that inherits from the base class. The base classes can be found in `lib/identity/importer/tasks/`
+1. Add a `self.sql` method that returns the sql to be run by the base class
+1. If you want to update the way the data is imported, or the sql is run, add a `self.run` method 
+1. Update the task run list pointing to your newly created class
+
+Note: We use `activerecord-import` to do import in batches for faster performance. Look at the base classes if you plan to add your own runner
 
 ## Development
 
