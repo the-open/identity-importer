@@ -22,15 +22,30 @@ Or install it yourself as:
 
 To use the gem you need to configure the database to use. Create a file called `importer.rb` in your application intializers folder `config/initalizers` with following content
 
-```
+```ruby
 Identity::Importer.configure do |config|
   config.database_adapter = "MySQL" # Currently only MySQL is supported, case insensitive
   config.database_host = "127.0.0.1" # Database Host
   config.database_name = "civicrm" # Database Name
   config.database_user = "root" # Database User
   config.database_password = "root" # Database Password
+  config.campaign_types = ['campaign_type1', 'campaign_type2'] # Different Campaign Types
+  config.action_types = ['Petition Signature', 'Share', 'Email'] # Different Action Types
 end
 ```
+
+NOTE: The above only works for CiviCRM.
+
+## Running the sync tasks
+
+Use `rake` to the run the tasks from the `identity` home folder
+
+```
+bundle exec rake identity_importer:run
+```
+
+This rake task can be found at `identity-app/tasks/identity_importer.rake`. The order in the rake task is the suggested order. You can enable and disable tasks by editing the file.
+
 
 ## Development
 
@@ -41,4 +56,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/the-open/identity-importer.
-
