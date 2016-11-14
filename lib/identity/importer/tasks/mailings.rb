@@ -27,7 +27,7 @@ module Identity
               end
             end
 
-            campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
+            campaign = Campaign.find_by(controlshift_campaign_id: mailing_data['campaign_id'])
 
             mailing.campaign_id = campaign.try(:id)
             mailing.recipients_synced = false
