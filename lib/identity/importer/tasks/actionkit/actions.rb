@@ -6,7 +6,7 @@ module Identity
       module ActionKit
         class Actions
 
-          def self.run
+          def self.sql
           end
 
         end

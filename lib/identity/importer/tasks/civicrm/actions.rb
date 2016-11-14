@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Actions
 
-          def self.run
+          def self.sql
             action_types = Identity::Importer.configuration.action_types
             if action_types.blank?
               raise ArgumentError, "Action Types is empty, please set action_types to a valid array"
