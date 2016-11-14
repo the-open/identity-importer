@@ -24,7 +24,12 @@ module Identity
               campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
 
               action.campaign = campaign
-              new_actions << action
+
+              if action.new_record?
+                new_actions << action
+              elsif action.changed?
+                action.save!
+              end
 
               member = Member.find_by(email: mailing_member['email'])
               member_id = member.try(:id) || 1
@@ -34,7 +39,12 @@ module Identity
                 member_id: member_id,
                 created_at: timestamp
               }
-              new_member_actions << member_action
+
+              if member_action.new_record?
+                new_member_actions << member_action
+              elsif member_action.changed?
+                member_action.save!
+              end
             end
             Action.import new_actions
             MemberAction.import new_member_actions

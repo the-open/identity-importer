@@ -33,7 +33,11 @@ module Identity
                   member_mailing.save!
                 end
 
-                opens << open
+                if open.new_record?
+                  opens << open
+                elsif open.changed?
+                  open.save!
+                end
               end
               Open.import opens
             end

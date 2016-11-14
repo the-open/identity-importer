@@ -31,7 +31,12 @@ module Identity
 
             mailing.campaign_id = campaign.try(:id)
             mailing.recipients_synced = false
-            mailings << mailing
+
+            if mailing.new_record?
+              mailings << mailing
+            elsif mailing.changed?
+              mailing.save!
+            end
           end
           Mailing.import mailings
         end

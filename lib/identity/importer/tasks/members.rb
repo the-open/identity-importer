@@ -19,11 +19,13 @@ module Identity
               }
 
               member = Member.find_or_initialize_by(email: member_data['email'])
+              member.attributes = data
 
               if member.new_record?
-                member.attributes = data
+                new_members << member
+              elsif member.changed?
+                member.save!
               end
-              new_members << member
             end
             Member.import new_members
           end

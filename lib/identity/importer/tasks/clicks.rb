@@ -33,7 +33,11 @@ module Identity
                   member_mailing.save!
                 end
 
-                clicks << click
+                if click.new_record?
+                  clicks << click
+                elsif click.changed?
+                  click.save!
+                end
               end
               Click.import clicks
             end

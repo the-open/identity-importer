@@ -18,7 +18,11 @@ module Identity
                 campaign_type: campaign_data['type']
               }
 
-              new_campaigns << campaign
+              if campaign.new_record?
+                new_campaigns << campaign
+              elsif campaign.changed?
+                campaign.save!
+              end
             end
 
             Campaign.import new_campaigns

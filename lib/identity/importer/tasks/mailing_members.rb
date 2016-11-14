@@ -24,7 +24,11 @@ module Identity
                   'external_id' => mailing_member['id']
                 }
 
-                member_mailings << member_mailing
+                if member_mailing.new_record?
+                  member_mailings << member_mailing
+                elsif member_mailing.changed?
+                  member_mailing.save!
+                end
               end
               MemberMailing.import member_mailings
 
