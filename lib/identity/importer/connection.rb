@@ -5,12 +5,13 @@ module Identity
     class Connection
 
       def initialize
+        logger = Identity::Importer.logger
         @configuration = Identity::Importer.configuration
 
         if @configuration.valid_database_config?
           case @configuration.database_adapter.downcase
           when "mysql"
-            puts "Trying to connect to a MySQL DB"
+            logger.info "Trying to connect to a MySQL DB"
             @client = Mysql2::Client.new(
               database: @configuration.database_name,
               host: @configuration.database_host,
@@ -18,7 +19,7 @@ module Identity
               password: @configuration.database_password,
               port: @configuration.database_port
             )
-            puts "Connected to MySQL database"
+            logger.info "Connected to MySQL database"
           else
             raise ArgumentError, "Unsupported database adapter"
           end

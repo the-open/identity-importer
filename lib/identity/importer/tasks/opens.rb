@@ -6,6 +6,7 @@ module Identity
       class Opens
 
         def self.run
+          logger = Identity::Importer.logger
           synced_mailings = Mailing.where(recipients_synced: true)
 
           synced_mailings.each do |mailing|
@@ -20,23 +21,27 @@ module Identity
 
                 member_mailing = MemberMailing.find_by(member_id: member_id, mailing_id: mailing.id)
 
-                open = Open.new(
-                  member_mailing_id: member_mailing.id
-                )
+                if member_mailing.nil?
+                  logger.warn "SKIPPED OPEN: Couldn't find MemberMailing with member_id: #{member_id}, mailing_id: #{mailing.id}"
+                else
+                  open = Open.new(
+                    member_mailing_id: member_mailing.id
+                  )
 
-                timestamp = open_event['timestamp'].to_datetime
-                open.created_at = timestamp
-                open.updated_at = timestamp
+                  timestamp = open_event['timestamp'].to_datetime
+                  open.created_at = timestamp
+                  open.updated_at = timestamp
 
-                if member_mailing.first_opened.nil?
-                  member_mailing.first_opened = timestamp
-                  member_mailing.save!
-                end
+                  if member_mailing.first_opened.nil?
+                    member_mailing.first_opened = timestamp
+                    member_mailing.save!
+                  end
 
-                if open.new_record?
-                  opens << open
-                elsif open.changed?
-                  open.save!
+                  if open.new_record?
+                    opens << open
+                  elsif open.changed?
+                    open.save!
+                  end
                 end
               end
               Open.import opens

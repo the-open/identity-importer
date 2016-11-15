@@ -6,6 +6,7 @@ module Identity
       class Clicks
 
         def self.run
+          logger = Identity::Importer.logger
           synced_mailings = Mailing.where(recipients_synced: true)
 
           synced_mailings.each do |mailing|
@@ -20,23 +21,27 @@ module Identity
 
                 member_mailing = MemberMailing.find_by(member_id: member_id, mailing_id: mailing.id)
 
-                click = Click.new(
-                  member_mailing_id: member_mailing.id
-                )
+                if member_mailing.nil?
+                  logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with member_id: #{member_id}, mailing_id: #{mailing.id}"
+                else
+                  click = Click.new(
+                    member_mailing_id: member_mailing.id
+                  )
 
-                timestamp = click_event['timestamp'].to_datetime
-                click.created_at = timestamp
-                click.updated_at = timestamp
+                  timestamp = click_event['timestamp'].to_datetime
+                  click.created_at = timestamp
+                  click.updated_at = timestamp
 
-                if member_mailing.first_clicked.nil?
-                  member_mailing.first_clicked = timestamp
-                  member_mailing.save!
-                end
+                  if member_mailing.first_clicked.nil?
+                    member_mailing.first_clicked = timestamp
+                    member_mailing.save!
+                  end
 
-                if click.new_record?
-                  clicks << click
-                elsif click.changed?
-                  click.save!
+                  if click.new_record?
+                    clicks << click
+                  elsif click.changed?
+                    click.save!
+                  end
                 end
               end
               Click.import clicks
