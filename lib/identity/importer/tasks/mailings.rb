@@ -18,27 +18,33 @@ module Identity
         ]
 
         def self.run
-          mailings = []
-          Identity::Importer.connection.run_query(sql).each do |mailing_data|
-            mailing = Mailing.find_or_initialize_by(external_id: mailing_data['external_id'])
-            if mailing.new_record?
-              mailing.attributes = mailing_data.select do |column_name, value|
-                COLUMNS_TO_SELECT.include? column_name
+          mailings = Identity::Importer.connection.run_query(sql)
+
+          mailings.each_slice(1000) do |mailings_data|
+            ActiveRecord::Base.transaction do
+              new_mailings = []
+              mailings_data.each do |mailing_data|
+                mailing = Mailing.find_or_initialize_by(external_id: mailing_data['external_id'])
+                if mailing.new_record?
+                  mailing.attributes = mailing_data.select do |column_name, value|
+                    COLUMNS_TO_SELECT.include? column_name
+                  end
+                end
+
+                campaign = Campaign.find_by(controlshift_campaign_id: mailing_data['campaign_id'])
+
+                mailing.campaign_id = campaign.try(:id)
+                mailing.recipients_synced = false
+
+                if mailing.new_record?
+                  new_mailings << mailing
+                elsif mailing.changed?
+                  mailing.save!
+                end
               end
-            end
-
-            campaign = Campaign.find_by(controlshift_campaign_id: mailing_data['campaign_id'])
-
-            mailing.campaign_id = campaign.try(:id)
-            mailing.recipients_synced = false
-
-            if mailing.new_record?
-              mailings << mailing
-            elsif mailing.changed?
-              mailing.save!
+              Mailing.import new_mailings
             end
           end
-          Mailing.import mailings
         end
 
       end
