@@ -7,20 +7,23 @@ module Identity
         class Mailings < Identity::Importer::Tasks::Mailings
 
           def self.sql
+            last_mailing = Mailing.where.not(external_id: nil).order("external_id desc").first
+
             %{
-              SELECT m.name,
-                m.id as external_id,
-                m.subject,
-                m.body_html,
-                m.body_text as body_plain,
-                m.from_name || ' <' || m.from_email || '>' as "from",
-                m.created_date as created_at,
-                m.campaign_id as campaign_id,
+              SELECT mailing.name,
+                mailing.id as external_id,
+                mailing.subject,
+                mailing.body_html,
+                mailing.body_text as body_plain,
+                mailing.from_name || ' <' || mailing.from_email || '>' as "from",
+                mailing.created_date as created_at,
+                mailing.campaign_id as campaign_id,
                 count(q.id) as member_count
-                FROM civicrm_mailing m LEFT JOIN civicrm_mailing_job job ON m.id = job.mailing_id
+                FROM civicrm_mailing mailing LEFT JOIN civicrm_mailing_job job ON mailing.id = job.mailing_id
                 LEFT JOIN  civicrm_mailing_event_queue q ON q.job_id = job.id
                 WHERE job.job_type = 'child'
-                GROUP BY m.id;
+                #{"AND mailing.id > #{last_mailing.external_id}" unless last_mailing.nil?}
+                GROUP BY mailing.id
             }
           end
 
