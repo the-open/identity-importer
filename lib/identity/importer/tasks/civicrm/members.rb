@@ -8,10 +8,11 @@ module Identity
 
           def self.sql
             last_member = Member.where(crypted_password: nil).order("created_at desc").first
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
                 contact.id as contact_id,
-                email.email as email,
+                #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
                 contact.first_name as firstname,
                 contact.last_name as lastname,
                 addr.postal_code as postcode,

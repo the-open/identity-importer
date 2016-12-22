@@ -7,8 +7,10 @@ module Identity
         class Clicks < Identity::Importer::Tasks::Clicks
 
           def self.sql mailing_id
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
+                #{anonymize ? "concat(sha1(u.email), '@action.kit')" : "u.email"} as email,
                 u.email as email,
                 c.created_at as timestamp
               FROM core_click c

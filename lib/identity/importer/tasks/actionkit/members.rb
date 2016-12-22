@@ -7,9 +7,10 @@ module Identity
         class Members < Identity::Importer::Tasks::Members
 
           def self.sql
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
-                u.email as email,
+                #{anonymize ? "concat(sha1(u.email), '@action.kit')" : "u.email"} as email,
                 u.id as contact_id,
                 u.first_name as firstname,
                 u.last_name as lastname,

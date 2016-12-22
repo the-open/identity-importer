@@ -9,6 +9,7 @@ module Identity
       attr_accessor :database_user
       attr_accessor :campaign_types
       attr_accessor :action_types
+      attr_accessor :anonymize
 
       def initialize
         @database_adapter = ""
@@ -19,6 +20,7 @@ module Identity
         @database_user = ""
         @campaign_types = []
         @action_types = []
+        @anonymize = false
       end
 
       def valid_database_config?

@@ -7,9 +7,10 @@ module Identity
         class MailingMembers < Identity::Importer::Tasks::MailingMembers
 
           def self.sql mailing_id
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
-                email.email as email,
+                #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
                 eventqueue.id as id
                 FROM civicrm_mailing m JOIN civicrm_mailing_job job ON m.id = job.mailing_id
                 JOIN civicrm_mailing_event_queue eventqueue ON eventqueue.job_id = job.id

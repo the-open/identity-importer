@@ -7,9 +7,10 @@ module Identity
         class Opens < Identity::Importer::Tasks::Opens
 
           def self.sql mailing_id
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
-                u.email as email,
+                #{anonymize ? "concat(sha1(u.email), '@action.kit')" : "u.email"} as email,
                 o.created_at as timestamp
               FROM core_open o
               JOIN core_user u on (u.id = o.user_id)

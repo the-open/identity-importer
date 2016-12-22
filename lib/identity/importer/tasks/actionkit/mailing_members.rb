@@ -7,9 +7,10 @@ module Identity
         class MailingMembers < Identity::Importer::Tasks::MailingMembers
 
           def self.sql mailing_id
+            anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
-                u.email as email,
+                #{anonymize ? "concat(sha1(u.email), '@action.kit')" : "u.email"} as email,
                 m.created_at as timestamp
               FROM core_usermailing m
               JOIN core_user u on (u.id = m.user_id)

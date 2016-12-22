@@ -7,6 +7,8 @@ module Identity
         class Actions
 
           def self.sql
+            anonymize = Identity::Importer.configuration.anonymize
+
             action_types = Identity::Importer.configuration.action_types
             if action_types.blank?
               raise ArgumentError, "Action Types is empty, please set action_types to a valid array"
@@ -17,7 +19,7 @@ module Identity
             campaigns = Campaign.where.not(controlshift_campaign_id: nil).pluck(:controlshift_campaign_id)
             %{
                SELECT
-                 email.email as email,
+                #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
                  act_type.activity_name as type,
                  act.activity_date_time as created_at,
                  act.id as external_id,
