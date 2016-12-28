@@ -13,7 +13,7 @@ module Identity
               SELECT
                 contact.id as contact_id,
                 #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
-                #{anonymize ? "left(sha1(contact.first_name), 10)" : "contact.first_name"} as firstname,
+                contact.first_name as firstname,
                 #{anonymize ? "left(sha1(contact.last_name), 10)" : "contact.last_name"} as lastname,
                 addr.postal_code as postcode,
                 contact.created_date as created_at,
