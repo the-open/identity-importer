@@ -6,6 +6,7 @@ module Identity
       class Members
 
         def self.run
+          logger = Identity::Importer.logger
           members = Identity::Importer.connection.run_query(sql)
 
           members.each_slice(1000) do |members_data|
@@ -24,8 +25,10 @@ module Identity
 
                 if member.new_record?
                   new_members << member
+                  logger.debug "Importing Member with id #{member.id}"
                 elsif member.changed?
                   member.save
+                  logger.debug "Updating Member with id #{member.id}"
                 end
               end
               Member.import new_members

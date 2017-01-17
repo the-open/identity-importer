@@ -7,6 +7,7 @@ module Identity
 
         def self.run
           actions = Identity::Importer.connection.run_query(sql)
+          logger = Identity::Importer.logger
 
           actions.each_slice(1000) do |action_events|
             ActiveRecord::Base.transaction do
@@ -28,8 +29,10 @@ module Identity
 
                 if action.new_record?
                   new_actions << action
+                  logger.debug "Importing Action with id #{action.id}"
                 elsif action.changed?
                   action.save!
+                  logger.debug "Updating Action with id #{action.id}"
                 end
 
                 member = Member.find_by(email: mailing_member['email'])
@@ -43,8 +46,10 @@ module Identity
 
                 if member_action.new_record?
                   new_member_actions << member_action
+                  logger.debug "Importing MemberAction with id #{member_action.id}"
                 elsif member_action.changed?
                   member_action.save!
+                  logger.debug "Updating MemberAction with id #{member_action.id}"
                 end
               end
               Action.import new_actions

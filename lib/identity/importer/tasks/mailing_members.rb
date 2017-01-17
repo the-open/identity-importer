@@ -6,6 +6,7 @@ module Identity
       class MailingMembers
 
         def self.run
+          logger = Identity::Importer.logger
           unsynced_mailings = Mailing.where(recipients_synced: false)
 
           unsynced_mailings.each do |mailing|
@@ -26,8 +27,10 @@ module Identity
 
                 if member_mailing.new_record?
                   member_mailings << member_mailing
+                  logger.debug "Importing MemberMailing with id #{member_mailing.id}"
                 elsif member_mailing.changed?
                   member_mailing.save!
+                  logger.debug "Updating MemberMailing with id #{member_mailing.id}"
                 end
               end
               MemberMailing.import member_mailings

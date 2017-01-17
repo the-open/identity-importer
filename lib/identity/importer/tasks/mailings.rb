@@ -18,6 +18,7 @@ module Identity
         ]
 
         def self.run
+          logger = Identity::Importer.logger
           mailings = Identity::Importer.connection.run_query(sql)
 
           mailings.each_slice(1000) do |mailings_data|
@@ -38,8 +39,10 @@ module Identity
 
                 if mailing.new_record?
                   new_mailings << mailing
+                  logger.debug "Importing Mailing with id #{mailing.id}"
                 elsif mailing.changed?
                   mailing.save!
+                  logger.debug "Updating Mailing with id #{mailing.id}"
                 end
               end
               Mailing.import new_mailings

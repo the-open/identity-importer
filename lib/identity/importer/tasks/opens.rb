@@ -40,8 +40,10 @@ module Identity
 
                     if open.new_record?
                       new_opens << open
+                      logger.debug "Importing Open with id #{open.id}"
                     elsif open.changed?
                       open.save!
+                      logger.debug "Updating Open with id #{open.id}"
                     end
                   end
                 end

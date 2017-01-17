@@ -7,6 +7,7 @@ module Identity
 
         def self.run
           campaigns = Identity::Importer.connection.run_query(sql)
+          logger = Identity::Importer.logger
 
           ActiveRecord::Base.transaction do
             new_campaigns = []
@@ -20,8 +21,10 @@ module Identity
 
               if campaign.new_record?
                 new_campaigns << campaign
+                logger.debug "Importing Campaign with id #{campaign.id}"
               elsif campaign.changed?
                 campaign.save!
+                logger.debug "Saving Campaign with id #{campaign.id}"
               end
             end
 

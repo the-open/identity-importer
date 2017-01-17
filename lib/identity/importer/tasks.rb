@@ -38,7 +38,6 @@ module Identity
         Identity::Importer::Tasks::ActionKit::Actions.run
       end
 
-
     end
   end
 end

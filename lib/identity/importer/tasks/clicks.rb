@@ -40,8 +40,10 @@ module Identity
 
                     if click.new_record?
                       new_clicks << click
+                      logger.debug "Importing Click with id #{click.id}"
                     elsif click.changed?
                       click.save!
+                      logger.debug "Updating Click with id #{click.id}"
                     end
                   end
                 end
