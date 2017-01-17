@@ -29,13 +29,13 @@ module Identity
       end
 
       def self.actionkit_run
-        Identity::Importer::Tasks::ActionKit::Campaigns.run
+        # Identity::Importer::Tasks::ActionKit::Campaigns.run
         Identity::Importer::Tasks::ActionKit::Members.run
         Identity::Importer::Tasks::ActionKit::Mailings.run
         Identity::Importer::Tasks::ActionKit::MailingMembers.run
-        Identity::Importer::Tasks::ActionKit::Opens.run
-        Identity::Importer::Tasks::ActionKit::Clicks.run
-        Identity::Importer::Tasks::ActionKit::Actions.run
+        # Identity::Importer::Tasks::ActionKit::Opens.run
+        # Identity::Importer::Tasks::ActionKit::Clicks.run
+        # Identity::Importer::Tasks::ActionKit::Actions.run
       end
 
     end
