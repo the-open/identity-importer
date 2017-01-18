@@ -10,6 +10,7 @@ module Identity
       attr_accessor :campaign_types
       attr_accessor :action_types
       attr_accessor :anonymize
+      attr_accessor :add_email_subscription
 
       def initialize
         @database_adapter = ""
@@ -21,6 +22,7 @@ module Identity
         @campaign_types = []
         @action_types = []
         @anonymize = false
+        @add_email_subscription = false
       end
 
       def valid_database_config?
