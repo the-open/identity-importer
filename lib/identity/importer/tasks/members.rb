@@ -28,10 +28,10 @@ module Identity
 
                 if member.new_record?
                   new_members << member
-                  logger.debug "Importing Member with id #{member.id}"
+                  logger.debug "Importing Member with email #{member.email}"
                 elsif member.changed?
                   member.save
-                  logger.debug "Updating Member with id #{member.id}"
+                  logger.debug "Updating Member with email #{member.email}"
                 end
 
                 if Identity::Importer.configuration.add_email_subscription
