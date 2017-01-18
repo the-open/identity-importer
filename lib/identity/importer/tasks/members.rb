@@ -36,7 +36,7 @@ module Identity
 
                 if Identity::Importer.configuration.add_email_subscription
                   unless email_subscription.nil?
-                    member_subscription = Member.find_or_initialize_by(subscription: email_subscription, member: member)
+                    member_subscription = MemberSubscription.find_or_initialize_by(subscription: email_subscription, member: member)
                     if member_subscription.new_record?
                       new_member_subscriptions << member_subscription
                     end
