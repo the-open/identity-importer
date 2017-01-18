@@ -31,6 +31,8 @@ Identity::Importer.configure do |config|
   config.database_password = "root" # Database Password
   config.campaign_types = ['campaign_type1', 'campaign_type2'] # Different Campaign Types
   config.action_types = ['Petition Signature', 'Share', 'Email'] # Different Action Types
+  config.anonymize = true # Anonymize the emails
+  config.add_email_subscription = false # Create MemberSubscription to be able to send emails
 end
 ```
 
