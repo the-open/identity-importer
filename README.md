@@ -7,7 +7,7 @@ Import actions, mailing, and other information from CiviCRM and other sources in
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'identity-importer', :path => "/path/to/identity-importer"
+gem 'identity-importer', :github => "the-open/identity-importer"
 ```
 
 And then execute:
