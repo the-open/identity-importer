@@ -17,16 +17,17 @@ module Identity
               hits = 0
               mailing_members.each_slice(10000) do |batch| 
                 logger.info "Iporting MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
+                logger.info "Cache stats: #{Padrino.cache.stats}"
                 counter += batch.length
                 batch.each do |mailing_member|
                   member_mailings = []
 
                   cache_key = "member_id:"+mailing_member['email']
-                  member_id = Padrino.cache[cache_key]
+                  member_id = Padrino.cache.get(cache_key)
                   if member_id.nil?
                     member = Member.find_by(email: mailing_member['email'])
                     member_id = member.try(:id) || 1
-                    Padrino.cache[cache_key] = member_id
+                    Padrino.cache.set(cache_key, member_id)
                   else
                     hits += 1
                   end
