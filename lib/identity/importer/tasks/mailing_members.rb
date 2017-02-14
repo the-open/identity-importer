@@ -22,7 +22,7 @@ module Identity
                 batch.each do |mailing_member|
                   member_mailings = []
 
-                  cache_key = "member_id:"+mailing_member['email']
+                  cache_key = mailing_member['email']
                   member_id = Padrino.cache.get(cache_key)
                   if member_id.nil?
                     member = Member.find_by(email: mailing_member['email'])
