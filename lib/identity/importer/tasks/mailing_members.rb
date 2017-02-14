@@ -14,13 +14,22 @@ module Identity
 
             ActiveRecord::Base.transaction do
               counter = 0
+              hits = 0
               mailing_members.each_slice(10000) do |batch| 
-                logger.info "Iporting MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter}"
+                logger.info "Iporting MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
                 counter += batch.length
                 batch.each do |mailing_member|
                   member_mailings = []
-                  member = Member.find_by(email: mailing_member['email'])
-                  member_id = member.try(:id) || 1
+
+                  cache_key = "member_id:"+mailing_member['email']
+                  member_id = Padrino.cache[cache_key]
+                  if member_id.nil?
+                    member = Member.find_by(email: mailing_member['email'])
+                    member_id = member.try(:id) || 1
+                    Padrino.cache[cache_key] = member_id
+                  else
+                    hits += 1
+                  end
 
                   member_mailing = MemberMailing.new
                   member_mailing.attributes = {
