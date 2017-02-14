@@ -7,6 +7,7 @@ module Identity
 
         def self.run
           logger = Identity::Importer.logger
+          member_id_cache = {}
           unsynced_mailings = Mailing.where(recipients_synced: false)
 
           unsynced_mailings.each do |mailing|
@@ -16,18 +17,18 @@ module Identity
               counter = 0
               hits = 0
               mailing_members.each_slice(10000) do |batch| 
-                logger.info "Iporting MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
-                logger.info "Cache stats: #{Padrino.cache.stats}"
+                #logger.info "Cache stats: #{Padrino.cache.stats}"
                 counter += batch.length
+
                 batch.each do |mailing_member|
                   member_mailings = []
 
                   cache_key = mailing_member['email']
-                  member_id = Padrino.cache.get(cache_key)
+                  member_id = member_id_cache[cache_key]
                   if member_id.nil?
                     member = Member.find_by(email: mailing_member['email'])
                     member_id = member.try(:id) || 1
-                    Padrino.cache.set(cache_key, member_id)
+                    member_id_cache[cache_key] = member_id
                   else
                     hits += 1
                   end
@@ -41,13 +42,14 @@ module Identity
 
                   if member_mailing.new_record?
                     member_mailings << member_mailing
-                    logger.debug "Importing MemberMailing: Mailing #{mailing.id}. '#{mailing.name}', Member #{member_id}. #{member.try(:email)}"
+                  #logger.debug "Importing MemberMailing: Mailing #{mailing.id}. '#{mailing.name}', Member #{member_id}. #{member.try(:email)}"
                   # this member_mailing was just created, it's never changed
                   # elsif member_mailing.changed?
                   #   member_mailing.save!
                   #   logger.debug "Updating MemberMailing with id #{member_mailing.id}"
                   end
                   MemberMailing.import member_mailings
+                  logger.info "Importing MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
                 end
               end
 
