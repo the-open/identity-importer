@@ -48,9 +48,9 @@ module Identity
                   #   member_mailing.save!
                   #   logger.debug "Updating MemberMailing with id #{member_mailing.id}"
                   end
-                  MemberMailing.import member_mailings
-                  logger.info "Importing MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
                 end
+                MemberMailing.import member_mailings
+                logger.info "Importing MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
               end
 
               mailing.recipients_synced = true
