@@ -13,27 +13,30 @@ module Identity
             mailing_members = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
             ActiveRecord::Base.transaction do
-              member_mailings = []
-              mailing_members.each do |mailing_member|
-                member = Member.find_by(email: mailing_member['email'])
-                member_id = member.try(:id) || 1
+              mailing_members.each_slice(10000) do |batch| 
+                batch.each do |mailing_member|
+                  member_mailings = []
+                  member = Member.find_by(email: mailing_member['email'])
+                  member_id = member.try(:id) || 1
 
-                member_mailing = MemberMailing.new
-                member_mailing.attributes = {
-                  'mailing_id' => mailing.id,
-                  'member_id' => member_id,
-                  'external_id' => mailing_member['id']
-                }
+                  member_mailing = MemberMailing.new
+                  member_mailing.attributes = {
+                    'mailing_id' => mailing.id,
+                    'member_id' => member_id,
+                    'external_id' => mailing_member['id']
+                  }
 
-                if member_mailing.new_record?
-                  member_mailings << member_mailing
-                  logger.debug "Importing MemberMailing with id #{member_mailing.id}"
-                elsif member_mailing.changed?
-                  member_mailing.save!
-                  logger.debug "Updating MemberMailing with id #{member_mailing.id}"
+                  if member_mailing.new_record?
+                    member_mailings << member_mailing
+                    logger.debug "Importing MemberMailing: Mailing #{mailing.id}. '#{mailing.name}', Member #{member_id}. #{member.try(:email)}"
+                  # this member_mailing was just created, it's never changed
+                  # elsif member_mailing.changed?
+                  #   member_mailing.save!
+                  #   logger.debug "Updating MemberMailing with id #{member_mailing.id}"
+                  end
+                  MemberMailing.import member_mailings
                 end
               end
-              MemberMailing.import member_mailings
 
               mailing.recipients_synced = true
               mailing.save!
