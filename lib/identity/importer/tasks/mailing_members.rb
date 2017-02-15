@@ -17,12 +17,10 @@ module Identity
               counter = 0
               hits = 0
               mailing_members.each_slice(10000) do |batch| 
-                #logger.info "Cache stats: #{Padrino.cache.stats}"
                 counter += batch.length
+                member_mailings = []
 
                 batch.each do |mailing_member|
-                  member_mailings = []
-
                   cache_key = mailing_member['email']
                   member_id = member_id_cache[cache_key]
                   if member_id.nil?
@@ -40,14 +38,7 @@ module Identity
                     'external_id' => mailing_member['id']
                   }
 
-                  if member_mailing.new_record?
-                    member_mailings << member_mailing
-                  #logger.debug "Importing MemberMailing: Mailing #{mailing.id}. '#{mailing.name}', Member #{member_id}. #{member.try(:email)}"
-                  # this member_mailing was just created, it's never changed
-                  # elsif member_mailing.changed?
-                  #   member_mailing.save!
-                  #   logger.debug "Updating MemberMailing with id #{member_mailing.id}"
-                  end
+                  member_mailings << member_mailing
                 end
                 MemberMailing.import member_mailings
                 logger.info "Importing MemberMailing: Mailing #{mailing.id}. #{mailing.name}, done #{counter} (#{hits} cache hits)"
