@@ -10,7 +10,7 @@ module Identity
           synced_mailings = Mailing.where(recipients_synced: true)
 
           synced_mailings.each do |mailing|
-            last_open = Open.joins(:member_mailings).
+            last_open = Open.joins(:member_mailing).
                         where(member_mailings: {mailing_id: mailing.id}).
                         order(:created_at).last
             member_mailing_cache = Member.
