@@ -19,6 +19,7 @@ module Identity
                                    where(member_mailings: {mailing_id: mailing.id}).
                                    inject({}) do |cache, member|
               cache[member.email] = member.member_mailing_id
+              cache
             end
             logger.info "last open #{last_open}, Opens MM cache size #{cache.length}"
 
