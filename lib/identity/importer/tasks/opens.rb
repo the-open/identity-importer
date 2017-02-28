@@ -21,7 +21,7 @@ module Identity
               cache[member.email] = member.member_mailing_id
               cache
             end
-            logger.info "last open #{last_open}, Opens MM cache size #{cache.length}"
+            logger.info "last open #{last_open}, Opens MM cache size #{member_mailing_cache.length}"
 
             opens = Identity::Importer.connection.run_query(sql, mailing.external_id, last_open.try(:created_at) || 0)
 
