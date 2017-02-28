@@ -11,6 +11,7 @@ module Identity
       attr_accessor :action_types
       attr_accessor :anonymize
       attr_accessor :add_email_subscription
+      attr_accessor :log_to_stdout
 
       def initialize
         @database_adapter = ""
@@ -23,6 +24,7 @@ module Identity
         @action_types = []
         @anonymize = false
         @add_email_subscription = false
+        @log_to_stdout = false
       end
 
       def valid_database_config?

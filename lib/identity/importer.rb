@@ -29,7 +29,13 @@ module Identity
 
     def self.logger
       if @logger.nil?
-        @logger = Logger.new("#{Padrino.root}/log/identity_importer.log", 10, 100000000)
+        @logger = if @configuration.log_to_stdout
+                    Logger.new(STDOUT)
+                  else
+                    Logger.new("#{Padrino.root}/log/identity_importer.log", 10, 100000000)
+
+                  end
+
         @logger.level = Logger::DEBUG
       end
       @logger
