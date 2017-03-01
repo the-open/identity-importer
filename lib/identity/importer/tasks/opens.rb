@@ -17,11 +17,13 @@ module Identity
                                    joins(:member_mailings).
                                    select('members.id, members.email, member_mailings.id as member_mailing_id').
                                    where(member_mailings: {mailing_id: mailing.id}).
-                                   inject({}) do |cache, member|
+                                   inject({}) { |cache, member|
+              puts member.attributes
               cache[member.email] = member.member_mailing_id
               cache
-            end
-            logger.info "last open #{last_open}, Opens MM cache size #{member_mailing_cache.length}"
+            }
+
+            logger.info "#{mailing.name} last open #{last_open}, members cahced (count:  #{member_mailing_cache.length})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
 

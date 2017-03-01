@@ -19,7 +19,7 @@ module Identity
                 WHERE job.job_type = 'child'
                 AND m.id = #{mailing_id}
                 AND open.time_stamp is not null
-                AND open.time_stamp > #{last_open.to_i}
+                AND open.time_stamp > #{ActiveRecord::Base.connection.quote(last_open)}
                 ORDER BY eventqueue.id ASC
             }
           end
