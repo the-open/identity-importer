@@ -48,7 +48,7 @@ module Identity
                   new_opens << open
                 end
                 Open.import new_opens
-                self.update_last_opens
+                self.update_last_opens mailing.id
               end
             end
             update_last_opens mailing.id
