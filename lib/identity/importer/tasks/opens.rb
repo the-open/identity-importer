@@ -23,7 +23,7 @@ module Identity
             end
             logger.info "last open #{last_open}, Opens MM cache size #{member_mailing_cache.length}"
 
-            opens = Identity::Importer.connection.exec_query(sql, [mailing.external_id, last_open.try(:created_at) || 0])
+            opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0)
 
             opens.each_slice(1000) do |open_events|
               new_opens = []

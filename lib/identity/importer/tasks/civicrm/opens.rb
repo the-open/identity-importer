@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Opens < Identity::Importer::Tasks::Opens
 
-          def self.sql 
+          def self.sql(mailing_id, last_open)
             anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
@@ -17,9 +17,9 @@ module Identity
                 JOIN civicrm_email email ON eventqueue.email_id = email.id
                 LEFT JOIN civicrm_mailing_event_opened open ON open.event_queue_id = eventqueue.id
                 WHERE job.job_type = 'child'
-                AND m.id = ?
+                AND m.id = #{mailing_id}
                 AND open.time_stamp is not null
-                AND open.time_stamp > ?
+                AND open.time_stamp > #{last_open.to_i}
                 ORDER BY eventqueue.id ASC
             }
           end
