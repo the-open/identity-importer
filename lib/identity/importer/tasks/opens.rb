@@ -31,7 +31,7 @@ module Identity
               new_opens = []
               ActiveRecord::Base.transaction do
                 open_events.each do |open_event|
-                  member_mailing_id = cache[open_event['email']]
+                  member_mailing_id = member_mailing_cache[open_event['email']]
 
                   if member_mailing_id.nil?
                     logger.warn "SKIPPED OPEN: Couldn't find MemberMailing with email: #{open_event['email']}, mailing_id: #{mailing.id}"
