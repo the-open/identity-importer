@@ -11,6 +11,8 @@ module Identity
 
           member_cache = Hash[Member.select(:email, :id).pluck(:email, :id)]
 
+          logger.info "#{unsynced_mailings.count} mailings to sync, member cache size #{member_cache.size}"
+
           unsynced_mailings.each do |mailing|
             mailing_members = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
@@ -33,6 +35,7 @@ module Identity
 
               mailing.recipients_synced = true
               mailing.save!
+              logger.info "Mailing #{mailing.id}. #{mailing.subject} saved"
             end
           end
 
