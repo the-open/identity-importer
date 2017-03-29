@@ -32,7 +32,7 @@ module Identity
 
                 member_mailings << member_mailing
               end
-              logger.info "Batch import #{member_mailing.count} mm's"
+              logger.info "Batch import #{member_mailings.count} mm's"
               MemberMailing.import member_mailings
 
               mailing.recipients_synced = true
