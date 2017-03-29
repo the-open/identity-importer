@@ -18,22 +18,24 @@ module Identity
 
             logger.info "Mailing #{mailing.id}. #{mailing.subject} recipients: #{mailing_members.count}"
             ActiveRecord::Base.transaction do
-              member_mailings = []
-              mailing_members.each do |mailing_member|
-                member_id = member_cache[mailing_member['email']]
-                member_id = 1 if member_id.nil?
+              mailing_members.each_slice(1000) do |mailing_members_slice| 
+                member_mailings = []
+                mailing_members_slice.each do |mailing_member|
+                  member_id = member_cache[mailing_member['email']]
+                  member_id = 1 if member_id.nil?
+                  
+                  member_mailing = MemberMailing.new
+                  member_mailing.attributes = {
+                    'mailing_id' => mailing.id,
+                    'member_id' => member_id,
+                    'external_id' => mailing_member['id']
+                  }
 
-                member_mailing = MemberMailing.new
-                member_mailing.attributes = {
-                  'mailing_id' => mailing.id,
-                  'member_id' => member_id,
-                  'external_id' => mailing_member['id']
-                }
-
-                member_mailings << member_mailing
+                  member_mailings << member_mailing
+                end
+                logger.info "Batch import #{member_mailings.count} mm's"
+                MemberMailing.import member_mailings
               end
-              logger.info "Batch import #{member_mailings.count} mm's"
-              MemberMailing.import member_mailings
 
               mailing.recipients_synced = true
               mailing.save!
