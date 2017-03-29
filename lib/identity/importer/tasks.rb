@@ -22,7 +22,7 @@ module Identity
         Identity::Importer::Tasks::CiviCRM::Campaigns.run
         Identity::Importer::Tasks::CiviCRM::Members.run
         Identity::Importer::Tasks::CiviCRM::Mailings.run
-        Identity::Importer::Tasks::CiviCRM::MailingMembers.run
+        Identity::Importer::Tasks::CiviCRM::MemberMailings.run
         Identity::Importer::Tasks::CiviCRM::Opens.run
         Identity::Importer::Tasks::CiviCRM::Clicks.run
         Identity::Importer::Tasks::CiviCRM::Actions.run
@@ -32,7 +32,7 @@ module Identity
         # Identity::Importer::Tasks::ActionKit::Campaigns.run
         Identity::Importer::Tasks::ActionKit::Members.run
         Identity::Importer::Tasks::ActionKit::Mailings.run
-        Identity::Importer::Tasks::ActionKit::MailingMembers.run
+        Identity::Importer::Tasks::ActionKit::MembersMailings.run
         # Identity::Importer::Tasks::ActionKit::Opens.run
         # Identity::Importer::Tasks::ActionKit::Clicks.run
         # Identity::Importer::Tasks::ActionKit::Actions.run

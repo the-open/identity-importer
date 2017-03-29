@@ -10,6 +10,10 @@ module Identity
           synced_mailings = Mailing.where(recipients_synced: true)
 
           synced_mailings.each do |mailing|
+            last_click = Click.joins(:member_mailing).
+                         where(member_mailings: {mailing_id: mailing.id}).
+                         order(:created_at).last
+
             clicks = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
             clicks.each_slice(1000) do |click_events|

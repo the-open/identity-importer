@@ -44,7 +44,6 @@ module Identity
                     created_at: timestamp,
                     updated_at: timestamp
                   )
-                  
                   new_opens << open
                 end
                 Open.import new_opens

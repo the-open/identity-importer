@@ -3,7 +3,7 @@ require 'activerecord-import'
 module Identity
   module Importer
     module Tasks
-      class MailingMembers
+      class MemberMailings
 
         def self.run
           logger = Identity::Importer.logger

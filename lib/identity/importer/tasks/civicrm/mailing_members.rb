@@ -1,10 +1,10 @@
-require 'identity/importer/tasks/mailing_members'
+require 'identity/importer/tasks/member_mailings'
 
 module Identity
   module Importer
     module Tasks
       module CiviCRM
-        class MailingMembers < Identity::Importer::Tasks::MailingMembers
+        class MemberMailings < Identity::Importer::Tasks::MemberMailings
 
           def self.sql mailing_id
             anonymize = Identity::Importer.configuration.anonymize
