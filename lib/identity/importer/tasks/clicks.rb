@@ -14,49 +14,46 @@ module Identity
                          where(member_mailings: {mailing_id: mailing.id}).
                          order(:created_at).last
 
-            clicks = Identity::Importer.connection.run_query(sql(mailing.external_id))
+            member_mailing_cache = Utils::member_mailing_cache(mailing.id)
+
+            clicks = Identity::Importer.connection.run_query(sql(mailing.external_id, last_click.try(:created_at) || 0))
 
             clicks.each_slice(1000) do |click_events|
               new_clicks = []
               ActiveRecord::Base.transaction do
                 click_events.each do |click_event|
+                  member_mailing_id = member_mailing_cache[open_event['email']]
 
-                  member = Member.find_by(email: click_event['email'])
-                  member_id = member.try(:id) || 1
-
-                  member_mailing = MemberMailing.find_by(member_id: member_id, mailing_id: mailing.id)
-
-                  if member_mailing.nil?
-                    logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with member_id: #{member_id}, mailing_id: #{mailing.id}"
-                  else
-                    click = Click.new(
-                      member_mailing_id: member_mailing.id
-                    )
-
-                    timestamp = click_event['timestamp'].to_datetime
-                    click.created_at = timestamp
-                    click.updated_at = timestamp
-
-                    if member_mailing.first_clicked.nil?
-                      member_mailing.first_clicked = timestamp
-                      member_mailing.save!
-                    end
-
-                    if click.new_record?
-                      new_clicks << click
-                      logger.debug "Importing Click with id #{click.id}"
-                    elsif click.changed?
-                      click.save!
-                      logger.debug "Updating Click with id #{click.id}"
-                    end
+                  if member_mailing_id.nil?
+                    logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with email: #{open_event['email']}, mailing_id: #{mailing.id}"
+                    next
                   end
+
+                  timestamp = open_event['timestamp'].to_datetime
+                  click = Click.new(
+                    member_mailing_id: member_mailing.id,
+                    created_at: timestamp,
+                    update_at: timestamp
+                  )
+
+                  new_clicks << click
                 end
                 Click.import new_clicks
               end
             end
-
+            update_last_clicks mailing.id
             mailing.update_counts
           end
+        end
+
+        def update_last_clicks mailing_id
+          %{
+              UPDATE member_mailings SET first_clicked = MIN(click.created_at)
+              FROM  member_mailings, clicks
+              WHERE member_mailings.mailing_id = #{mailing_id}
+              AND   click.member_mailing_id = member_mailing.id
+              GROUP BY member_mailings.id
+            }
         end
 
       end

@@ -9,14 +9,16 @@ module Identity
           logger = Identity::Importer.logger
           unsynced_mailings = Mailing.where(recipients_synced: false)
 
+          member_cache = Hash[Member.select(:email, :id).pluck(:email, :id)]
+
           unsynced_mailings.each do |mailing|
             mailing_members = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
             ActiveRecord::Base.transaction do
               member_mailings = []
               mailing_members.each do |mailing_member|
-                member = Member.find_by(email: mailing_member['email'])
-                member_id = member.try(:id) || 1
+                member_id = member_cache[mailing_member['email']]
+                member_id = 1 if member_id.nil?
 
                 member_mailing = MemberMailing.new
                 member_mailing.attributes = {
@@ -25,13 +27,7 @@ module Identity
                   'external_id' => mailing_member['id']
                 }
 
-                if member_mailing.new_record?
-                  member_mailings << member_mailing
-                  logger.debug "Importing MemberMailing with id #{member_mailing.id}"
-                elsif member_mailing.changed?
-                  member_mailing.save!
-                  logger.debug "Updating MemberMailing with id #{member_mailing.id}"
-                end
+                member_mailings << member_mailing
               end
               MemberMailing.import member_mailings
 

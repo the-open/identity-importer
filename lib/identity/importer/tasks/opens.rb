@@ -13,15 +13,8 @@ module Identity
             last_open = Open.joins(:member_mailing).
                         where(member_mailings: {mailing_id: mailing.id}).
                         order(:created_at).last
-            member_mailing_cache = Member.
-                                   joins(:member_mailings).
-                                   select('members.id, members.email, member_mailings.id as member_mailing_id').
-                                   where(member_mailings: {mailing_id: mailing.id}).
-                                   inject({}) { |cache, member|
-              puts member.attributes
-              cache[member.email] = member.member_mailing_id
-              cache
-            }
+
+            member_mailing_cache = Utils::member_mailing_cache(mailing.id);
 
             logger.info "#{mailing.name} last open #{last_open}, members cahced (count:  #{member_mailing_cache.length})"
 
@@ -47,7 +40,6 @@ module Identity
                   new_opens << open
                 end
                 Open.import new_opens
-                self.update_last_opens mailing.id
               end
             end
             update_last_opens mailing.id
