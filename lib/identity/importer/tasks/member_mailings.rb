@@ -16,6 +16,7 @@ module Identity
           unsynced_mailings.each do |mailing|
             mailing_members = Identity::Importer.connection.run_query(sql(mailing.external_id))
 
+            logger.info "Mailing #{mailing.id}. #{mailing.subject} recipients: #{mailing_members.count}"
             ActiveRecord::Base.transaction do
               member_mailings = []
               mailing_members.each do |mailing_member|
@@ -31,6 +32,7 @@ module Identity
 
                 member_mailings << member_mailing
               end
+              logger.info "Batch import #{member_mailing.count} mm's"
               MemberMailing.import member_mailings
 
               mailing.recipients_synced = true
