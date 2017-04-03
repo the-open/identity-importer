@@ -5,9 +5,12 @@ module Identity
     module Tasks
       class Opens
 
-        def self.run
+        def self.run(days_young=nil)
           logger = Identity::Importer.logger
           synced_mailings = Mailing.where(recipients_synced: true)
+          unless days_young.nil?
+            synced_mailings = synced_mailings.where("created_at >= ?", Date.today-days_young.days)
+          end
 
           synced_mailings.each do |mailing|
             last_open = Open.joins(:member_mailing).
@@ -16,7 +19,7 @@ module Identity
 
             member_mailing_cache = Utils::member_mailing_cache(mailing.id);
 
-            logger.info "#{mailing.name} last open #{last_open}, members cahced (count:  #{member_mailing_cache.length})"
+            logger.info "#{mailing.name} last open #{last_open}, members cahced (count:  #{member_mailing_cache.size})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
 

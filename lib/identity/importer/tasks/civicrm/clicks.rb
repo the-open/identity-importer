@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Clicks < Identity::Importer::Tasks::Clicks
 
-          def self.sql mailing_id
+          def self.sql(mailing_id, last_click)
             anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
@@ -19,6 +19,7 @@ module Identity
                 WHERE job.job_type = 'child'
                 AND m.id = #{mailing_id}
                 AND click.time_stamp is not null
+                AND open.time_stamp > #{ActiveRecord::Base.connection.quote(last_click)}
                 ORDER BY eventqueue.id ASC
             }
           end

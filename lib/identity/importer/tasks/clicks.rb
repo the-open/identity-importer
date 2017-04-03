@@ -5,9 +5,12 @@ module Identity
     module Tasks
       class Clicks
 
-        def self.run
+        def self.run(days_young=nil)
           logger = Identity::Importer.logger
           synced_mailings = Mailing.where(recipients_synced: true)
+          unless days_young.nil?
+            synced_mailings = synced_mailings.where("created_at >= ?", Date.today-days_young.days)
+          end
 
           synced_mailings.each do |mailing|
             last_click = Click.joins(:member_mailing).
