@@ -17,11 +17,14 @@ module Identity
                 #{anonymize ? "left(sha1(contact.last_name), 10)" : "contact.last_name"} as lastname,
                 addr.postal_code as postcode,
                 contact.created_date as created_at,
-                contact.modified_date as updated_at
+                contact.modified_date as updated_at,
+                contact.is_opt_out as is_opt_out
                 FROM civicrm_email email JOIN civicrm_contact contact ON email.contact_id = contact.id
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
                 #{"WHERE contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
             }
+
+            # XXX maybe add optout from email model (check column)
           end
 
         end
