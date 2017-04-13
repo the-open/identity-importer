@@ -30,18 +30,18 @@ module Identity
                   if Identity::Importer.configuration.add_email_subscription
                     # this contact is opt out.
                     # we need to remove the subscription from Identity Id
-                    unless member_data['email_subscription']
-                      and not member_in_id[:email_subscription_id].nil?
+                    unless member_data['email_subscription'] and
+                          not member_in_id[:email_subscription_id].nil?
 
                       MemberSubscription.find(member_in_id[:email_subscription_id]).delete
                       member_in_id[:email_subscription_id] = nil
                     end
 
-                    if member_data['email_subscription']
-                      and member_in_id[:email_subscription_id].nil?
+                    if member_data['email_subscription'] and
+                      member_in_id[:email_subscription_id].nil?
                       # we have this member but does not have email subscription.
                       # schedule to add it.
-                      new_member_subscriptions << MemberSubscription.new subscription: email_subscription, member_id: member_in_id[:id]
+                      new_member_subscriptions << MemberSubscription.new(subscription: email_subscription, member_id: member_in_id[:id])
                     end
                   end
 
@@ -56,7 +56,7 @@ module Identity
 
                   if Identity::Importer.configuration.add_email_subscription
                     if member_data['email_subscription']
-                      new_member_subscriptions << MemberSubscription.new subscription: email_subscription, member: member
+                      new_member_subscriptions << MemberSubscription.new(subscription: email_subscription, member: member)
                     end
                   end
 
