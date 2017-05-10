@@ -21,7 +21,8 @@ module Identity
                 CASE contact.is_opt_out WHEN 1 THEN FALSE WHEN 0 THEN TRUE END as email_subscription 
                 FROM civicrm_email email JOIN civicrm_contact contact ON email.contact_id = contact.id
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
-                #{"WHERE contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
+                WHERE is_deleted = 0 
+                #{"AND contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
             }
 
             # XXX maybe add optout from email model (check column)
