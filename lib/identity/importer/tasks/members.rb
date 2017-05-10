@@ -8,7 +8,9 @@ module Identity
         def self.run
           logger = Identity::Importer.logger
 
+          Padrino.logger.info "Loading member cache"
           got_members = Utils::member_cache
+          Padrino.logger.info "Loading member cache done (#{got_members.size} of them)"
           already_added_emails = Set.new
           members = Identity::Importer.connection.run_query(sql)
 
@@ -17,7 +19,10 @@ module Identity
             email_subscription = Subscription.create! id: Subscription::EMAIL_SUBSCRIPTION
           end
 
+          Padrino.logger.info "Received #{members.count} members from upstream database"
+
           members.each_slice(1000) do |member_batch|
+            Padrino.logger.info "Start importing members batch (of 1000)"
             ActiveRecord::Base.transaction do
               new_members = []
               new_member_subscriptions = []
