@@ -48,7 +48,8 @@ module Identity
                 else
                   member = Member.new
                   member.attributes = {
-                    name: (member_data['firstname'] or '(none)')+' '+(member_data['lastname'] or '(none)'),
+                    first_name: member_data['firstname'],
+                    last_name: member_data['lastname'],
                     email: member_data['email'],
                     created_at: member_data['created_at'].try(:to_datetime),
                     updated_at: member_data['updated_at'].try(:to_datetime)
