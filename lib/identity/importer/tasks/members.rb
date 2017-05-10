@@ -66,6 +66,7 @@ module Identity
                     end
                   end
 
+                  new_members << member
                   already_added_emails << member_data['email']
                 end
               end
