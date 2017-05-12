@@ -23,6 +23,7 @@ module Identity
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
                 WHERE is_deleted = 0 
                 #{"AND contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
+                ORDER BY contact.created_date ASC
             }
 
             # XXX maybe add optout from email model (check column)
