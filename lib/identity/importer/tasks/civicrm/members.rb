@@ -17,7 +17,7 @@ module Identity
                 #{anonymize ? "left(sha1(contact.last_name), 10)" : "contact.last_name"} as lastname,
                 addr.postal_code as postcode,
                 contact.created_date as created_at,
-                contact.modified_date as updated_at,
+                contact.modified_date as updated_at
                 FROM civicrm_email email JOIN civicrm_contact contact ON email.contact_id = contact.id
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
                 WHERE is_deleted = 0 AND is_opt_out = 0
