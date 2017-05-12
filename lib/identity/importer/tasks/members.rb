@@ -25,32 +25,11 @@ module Identity
             Padrino.logger.info "Start importing members batch (of 1000)"
             ActiveRecord::Base.transaction do
               new_members = []
-              new_member_subscriptions = []
               member_batch.each do |member_data|
                 next if already_added_emails.include? member_data['email']
 
                 member_in_id = got_members[member_data['email']]
-                if member_in_id
-
-                  if Identity::Importer.configuration.add_email_subscription
-                    # this contact is opt out.
-                    # we need to remove the subscription from Identity Id
-                    unless member_data['email_subscription'] and
-                          not member_in_id[:email_subscription_id].nil?
-
-                      MemberSubscription.find(member_in_id[:email_subscription_id]).delete
-                      member_in_id[:email_subscription_id] = nil
-                    end
-
-                    if member_data['email_subscription'] and
-                      member_in_id[:email_subscription_id].nil?
-                      # we have this member but does not have email subscription.
-                      # schedule to add it.
-                      new_member_subscriptions << MemberSubscription.new(subscription: email_subscription, member_id: member_in_id[:id])
-                    end
-                  end
-
-                else
+                if member_in_id.nil?
                   member = Member.new
                   member.attributes = {
                     first_name: member_data['firstname'],
@@ -60,22 +39,20 @@ module Identity
                     updated_at: member_data['updated_at'].try(:to_datetime)
                   }
 
-                  if Identity::Importer.configuration.add_email_subscription
-                    if member_data['email_subscription']
-                      new_member_subscriptions << MemberSubscription.new(subscription: email_subscription, member: member)
-                    end
-                  end
-
                   new_members << member
                   already_added_emails << member_data['email']
                 end
               end
               Member.import new_members
-              MemberSubscription.import new_member_subscriptions
             end
           end
+          Padrino.logger "All members imported. Now let's batch create mail subscription for all of them"
+          if Identity::Importer.configuration.add_email_subscription
+            ActiveRecord::Base.connection.execute %{INSERT INTO member_subscriptions (subscription_id, member_id, created_at, updated_at)
+               SELECT 1,m.id,m.created_at,m.created_at FROM members m LEFT JOIN  member_subscriptions ms ON m.id = ms.member_id WHERE ms.id IS NULL;
+            }
+          end
         end
-
       end
     end
   end

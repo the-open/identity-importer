@@ -18,10 +18,9 @@ module Identity
                 addr.postal_code as postcode,
                 contact.created_date as created_at,
                 contact.modified_date as updated_at,
-                CASE contact.is_opt_out WHEN 1 THEN FALSE WHEN 0 THEN TRUE END as email_subscription 
                 FROM civicrm_email email JOIN civicrm_contact contact ON email.contact_id = contact.id
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
-                WHERE is_deleted = 0 
+                WHERE is_deleted = 0 AND is_opt_out = 0
                 #{"AND contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
                 ORDER BY contact.created_date ASC
             }
