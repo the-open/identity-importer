@@ -27,7 +27,8 @@ module Identity
                   mailing_members_slice.each do |mailing_member|
                     member_id = member_cache[mailing_member['email']]
                     if member_id.nil?
-                      raise MailingIncomplete, "The mailing #{mailing.id} doesn't have all recipients synced"
+                      next # we might not have all these members..because they opted out and got removed.
+                      # raise MailingIncomplete, "The mailing #{mailing.id} doesn't have all recipients synced"
                     end
                     
                     member_mailing = MemberMailing.new
