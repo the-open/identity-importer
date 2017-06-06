@@ -31,9 +31,17 @@ module Identity
                 member_in_id = got_members[member_data['email']]
                 if member_in_id.nil?
                   member = Member.new
+                  if member.attributes.keys.include?("first_name")
+                    member.attributes = {
+                      first_name: member_data['firstname'],
+                      last_name: member_data['lastname'],
+                    }
+                  else
+                    member.attributes = {
+                      name: "#{member_data['firstname']} #{member_data['lastname']}"
+                    }
+                  end
                   member.attributes = {
-                    first_name: member_data['firstname'],
-                    last_name: member_data['lastname'],
                     email: member_data['email'],
                     created_at: member_data['created_at'].try(:to_datetime),
                     updated_at: member_data['updated_at'].try(:to_datetime)
