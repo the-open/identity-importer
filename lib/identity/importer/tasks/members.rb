@@ -25,6 +25,7 @@ module Identity
             Padrino.logger.info "Start importing members batch (of 1000)"
             ActiveRecord::Base.transaction do
               new_members = []
+              new_phone_numbers = []
               member_batch.each do |member_data|
                 next if already_added_emails.include? member_data['email']
 
@@ -47,11 +48,20 @@ module Identity
                     updated_at: member_data['updated_at'].try(:to_datetime)
                   }
 
+                  unless member_data['phone_number'].blank?
+                    number = Cleanser.cleanse_phone_number(member_data['phone_number'])
+                    phone_number = PhoneNumber.find_or_create_by(member_id: member.id, phone: number)
+                    if phone_number.valid?
+                      new_phone_numbers << phone_number
+                    end
+                  end
+
                   new_members << member
                   already_added_emails << member_data['email']
                 end
               end
               Member.import new_members
+              PhoneNumber.import new_phone_numbers
             end
           end
           Padrino.logger.info "All members imported. Now let's batch create mail subscription for all of them"
