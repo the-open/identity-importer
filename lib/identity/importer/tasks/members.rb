@@ -67,7 +67,7 @@ module Identity
           Padrino.logger.info "All members imported. Now let's batch create mail subscription for all of them"
           if Identity::Importer.configuration.add_email_subscription
             ActiveRecord::Base.connection.execute %{INSERT INTO member_subscriptions (subscription_id, member_id, created_at, updated_at)
-               SELECT 1,m.id,m.created_at,m.created_at FROM members m LEFT JOIN  member_subscriptions ms ON m.id = ms.member_id WHERE ms.id IS NULL;
+               SELECT #{Subscription::EMAIL_SUBSCRIPTION},m.id,m.created_at,m.created_at FROM members m LEFT JOIN  member_subscriptions ms ON m.id = ms.member_id WHERE ms.id IS NULL;
             }
           end
         end
