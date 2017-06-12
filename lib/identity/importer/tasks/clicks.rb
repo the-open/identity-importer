@@ -34,7 +34,7 @@ module Identity
 
                   timestamp = click_event['timestamp'].to_datetime
                   click = Click.new(
-                    member_mailing_id: member_mailing.id,
+                    member_mailing_id: member_mailing_id,
                     created_at: timestamp,
                     update_at: timestamp
                   )
