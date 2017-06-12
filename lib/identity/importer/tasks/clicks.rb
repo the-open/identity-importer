@@ -36,7 +36,7 @@ module Identity
                   click = Click.new(
                     member_mailing_id: member_mailing_id,
                     created_at: timestamp,
-                    update_at: timestamp
+                    updated_at: timestamp
                   )
 
                   new_clicks << click
