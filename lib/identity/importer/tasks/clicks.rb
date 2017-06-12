@@ -25,14 +25,14 @@ module Identity
               new_clicks = []
               ActiveRecord::Base.transaction do
                 click_events.each do |click_event|
-                  member_mailing_id = member_mailing_cache[open_event['email']]
+                  member_mailing_id = member_mailing_cache[click_event['email']]
 
                   if member_mailing_id.nil?
-                    logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with email: #{open_event['email']}, mailing_id: #{mailing.id}"
+                    logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with email: #{click_event['email']}, mailing_id: #{mailing.id}"
                     next
                   end
 
-                  timestamp = open_event['timestamp'].to_datetime
+                  timestamp = click_event['timestamp'].to_datetime
                   click = Click.new(
                     member_mailing_id: member_mailing.id,
                     created_at: timestamp,
