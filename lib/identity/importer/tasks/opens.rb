@@ -19,7 +19,7 @@ module Identity
 
             member_mailing_cache = Utils::member_mailing_cache(mailing.id);
 
-            logger.info "#{mailing.name} last open #{last_open}, members cahced (count:  #{member_mailing_cache.size})"
+            logger.info "#{mailing.name} last open #{last_open}, members cached (count:  #{member_mailing_cache.size})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
 
