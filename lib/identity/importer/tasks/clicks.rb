@@ -49,7 +49,7 @@ module Identity
           end
         end
 
-        def update_last_clicks mailing_id
+        def self.update_last_clicks mailing_id
           %{
               UPDATE member_mailings SET first_clicked = MIN(click.created_at)
               FROM  member_mailings, clicks
