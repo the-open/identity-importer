@@ -14,6 +14,9 @@ module Identity
           'from',         # the fromline
           'created_at',   # when the mailing object was created
           'sent_at',      # when you actually hit send on the mailing
+          'scheduled_for',  # when the mailing was scheduled for
+          'finished_sending_at', # when the sending job finished
+          'send_time',    # sending duration in seconds
           'member_count'  # the actual count (not expected) of mailings sent
         ]
 

@@ -20,6 +20,9 @@ module Identity
                 mailing.campaign_id as campaign_id,
                 mailing.created_date as created_at,
                 mailing.scheduled_date as sent_at,
+                job.scheduled_date as scheduled_for,
+                job.end_date as finished_sending_at,
+                job.end_date - job.start_date as send_time,
                 count(q.id) as member_count
                 FROM civicrm_mailing mailing LEFT JOIN civicrm_mailing_job job ON mailing.id = job.mailing_id
                 LEFT JOIN  civicrm_mailing_event_queue q ON q.job_id = job.id
