@@ -14,8 +14,8 @@ module Identity
 
             %{
               SELECT
-                      email.email as email
-                      act.activity_date_time as created_at,
+                      email.email as email,
+                      act.activity_date_time as created_at
                        FROM civicrm_activity act
                        JOIN (
                            SELECT v.value as id, v.name
