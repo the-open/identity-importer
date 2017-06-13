@@ -12,14 +12,14 @@ module Identity
             synced_mailings = synced_mailings.where("created_at >= ?", Date.today-days_young.days)
           end
 
-          synced_mailings.each do |mailing|
+          synced_mailings.each_with_index do |mailing, i|
             last_open = Open.joins(:member_mailing).
                         where(member_mailings: {mailing_id: mailing.id}).
                         order(:created_at).last
 
             member_mailing_cache = Utils::member_mailing_cache(mailing.id);
 
-            logger.info "#{mailing.name} last open #{last_open.try(:created_at)}, members cache size #{member_mailing_cache.size})"
+            logger.info "${i}/${synced_mailings.length} #{mailing.name} last open #{last_open.try(:created_at)}, members cache size #{member_mailing_cache.size})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
             opens_count = 0
