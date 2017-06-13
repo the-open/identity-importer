@@ -53,11 +53,13 @@ module Identity
 
         def self.update_last_opens mailing_id
           update_mm_sql = %{
-              UPDATE member_mailings SET first_opened = MIN(open.created_at)
-              FROM  member_mailings, opens
-              WHERE member_mailings.mailing_id = #{mailing_id}
-              AND   open.member_mailing_id = member_mailing.id
-              GROUP BY member_mailings.id
+    UPDATE member_mailings SET first_opened = first.created_at
+    FROM (SELECT member_mailings.id AS id, MIN(opens.created_at) AS created_at
+          FROM member_mailings JOIN opens
+          ON opens.member_mailing_id = member_mailings.id
+          WHERE member_mailings.mailing_id = #{mailing_id}
+          GROUP BY member_mailings.id) first
+    WHERE first.id = member_mailings.id and member_mailings.id = #{mailing_id}
             }
           Identity::Importer.connection.run_query(update_mm_sql)
         end

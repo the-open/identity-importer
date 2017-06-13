@@ -51,11 +51,14 @@ module Identity
 
         def self.update_last_clicks mailing_id
           update_mm_sql = %{
-              UPDATE member_mailings SET first_clicked = MIN(click.created_at)
-              FROM  member_mailings, clicks
-              WHERE member_mailings.mailing_id = #{mailing_id}
-              AND   click.member_mailing_id = member_mailing.id
-              GROUP BY member_mailings.id
+    UPDATE member_mailings SET first_clicked = first.created_at
+    FROM (SELECT member_mailings.id AS id, MIN(clicks.created_at) AS created_at
+          FROM member_mailings JOIN clicks
+          ON clicks.member_mailing_id = member_mailings.id
+          WHERE member_mailings.mailing_id = #{mailing_id}
+          GROUP BY member_mailings.id) first
+    WHERE first.id = member_mailings.id and member_mailings.id = #{mailing_id}
+
             }
           Identity::Importer.connection.run_query(update_mm_sql)
         end
