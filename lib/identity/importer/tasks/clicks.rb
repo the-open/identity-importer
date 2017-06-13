@@ -57,10 +57,10 @@ module Identity
           ON clicks.member_mailing_id = member_mailings.id
           WHERE member_mailings.mailing_id = #{mailing_id}
           GROUP BY member_mailings.id) first
-    WHERE first.id = member_mailings.id and member_mailings.id = #{mailing_id}
+    WHERE first.id = member_mailings.id and member_mailings.mailing_id = #{mailing_id}
 
             }
-          Identity::Importer.connection.run_query(update_mm_sql)
+          Click.connection.execute(update_mm_sql)
         end
 
       end

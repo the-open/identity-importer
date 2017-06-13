@@ -61,7 +61,7 @@ module Identity
           GROUP BY member_mailings.id) first
     WHERE first.id = member_mailings.id and member_mailings.mailing_id = #{mailing_id}
             }
-          Identity::Importer.connection.run_query(update_mm_sql)
+          Open.connection.execute(update_mm_sql)
         end
 
       end
