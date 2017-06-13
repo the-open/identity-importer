@@ -11,7 +11,7 @@ module Identity
             %{
               SELECT
                 #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
-                open.time_stamp as timestamp
+                min(open.time_stamp) as timestamp
                 FROM civicrm_mailing m JOIN civicrm_mailing_job job ON m.id = job.mailing_id
                 JOIN civicrm_mailing_event_queue eventqueue ON eventqueue.job_id = job.id
                 JOIN civicrm_email email ON eventqueue.email_id = email.id
@@ -20,6 +20,7 @@ module Identity
                 AND m.id = #{mailing_id}
                 AND open.time_stamp is not null
                 AND open.time_stamp > #{ActiveRecord::Base.connection.quote(last_open)}
+                GROUP BY email.email
                 ORDER BY eventqueue.id ASC
             }
           end
