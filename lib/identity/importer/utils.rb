@@ -1,6 +1,7 @@
 module Identity
   module Importer
     module Utils
+      MemberCache = Struct.new(:id, :email_subscription_id, :unsubscribed_at)
 
       def self.format_array_for_sql array
         array.map do |value|
@@ -9,7 +10,6 @@ module Identity
       end
 
       def self.member_cache
-        MemberCache = Struct.new(:id, :email_subscription_id, :unsubscribed_at)
 
         Hash[Member.
               joins("LEFT JOIN member_subscriptions ms ON ms.member_id = members.id AND ms.subscription_id = #{Subscription::EMAIL_SUBSCRIPTION}").
