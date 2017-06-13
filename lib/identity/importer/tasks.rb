@@ -5,6 +5,7 @@ require 'identity/importer/tasks/civicrm/mailings'
 require 'identity/importer/tasks/civicrm/member_mailings'
 require 'identity/importer/tasks/civicrm/members'
 require 'identity/importer/tasks/civicrm/opens'
+require 'identity/importer/tasks/civicrm/optout'
 
 require 'identity/importer/tasks/actionkit/actions'
 require 'identity/importer/tasks/actionkit/campaigns'
