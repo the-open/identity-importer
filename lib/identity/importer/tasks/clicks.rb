@@ -20,6 +20,7 @@ module Identity
             member_mailing_cache = Utils::member_mailing_cache(mailing.id)
 
             clicks = Identity::Importer.connection.run_query(sql(mailing.external_id, last_click.try(:created_at) || 0))
+            clicks_count = 0
 
             clicks.each_slice(1000) do |click_events|
               new_clicks = []
@@ -41,11 +42,18 @@ module Identity
 
                   new_clicks << click
                 end
+                clicks_count += new_clicks.length
                 Click.import new_clicks
               end
             end
-            update_last_clicks mailing.id
-            mailing.update_counts
+            
+            if clicks_count > 0
+              logger.info "Finished importing clicks. Updating counts for #{mailing.name}"
+              update_last_clicks mailing.id
+              mailing.update_counts
+            else
+              logger.info "Finished importing clicks. no changes so not updating counts."
+            end
           end
         end
 

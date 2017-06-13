@@ -19,9 +19,10 @@ module Identity
 
             member_mailing_cache = Utils::member_mailing_cache(mailing.id);
 
-            logger.info "#{mailing.name} last open #{last_open}, members cached (count:  #{member_mailing_cache.size})"
+            logger.info "#{mailing.name} last open #{last_open.try(:created_at)}, members cache size #{member_mailing_cache.size})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
+            opens_count = 0
 
             opens.each_slice(1000) do |open_events|
               new_opens = []
@@ -42,12 +43,17 @@ module Identity
                   )
                   new_opens << open
                 end
+                opens_count += new_opens.length
                 Open.import new_opens
               end
             end
-            logger.info "Finished. Updating counts for #{mailing.name}"
-            update_last_opens mailing.id
-            mailing.update_counts
+            if opens_count > 0
+              logger.info "Finished importing opens. Updating counts for #{mailing.name}"
+              update_last_opens mailing.id
+              mailing.update_counts
+            else
+              logger.info "Finished importing opens. no changes so not updating counts."
+            end
           end
         end
 
