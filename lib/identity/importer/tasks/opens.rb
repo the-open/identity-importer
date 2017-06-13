@@ -45,19 +45,21 @@ module Identity
                 Open.import new_opens
               end
             end
+            logger.info "Finished. Updating counts for #{mailing.name}"
             update_last_opens mailing.id
             mailing.update_counts
           end
         end
 
         def self.update_last_opens mailing_id
-          %{
+          update_mm_sql = %{
               UPDATE member_mailings SET first_opened = MIN(open.created_at)
               FROM  member_mailings, opens
               WHERE member_mailings.mailing_id = #{mailing_id}
               AND   open.member_mailing_id = member_mailing.id
               GROUP BY member_mailings.id
             }
+          Identity::Importer.connection.run_query(update_mm_sql)
         end
 
       end
