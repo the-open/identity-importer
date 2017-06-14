@@ -19,7 +19,7 @@ module Identity
 
             member_mailing_cache = nil
 
-            logger.info "#{i}/#{synced_mailings.length} #{mailing.name} last click #{last_click.try(:created_at)}, members cache size #{member_mailing_cache.size})"
+            logger.info "#{i}/#{synced_mailings.length} #{mailing.name} last click #{last_click.try(:created_at)}"
 
             clicks = Identity::Importer.connection.run_query(sql(mailing.external_id, last_click.try(:created_at) || 0))
             clicks_count = 0
