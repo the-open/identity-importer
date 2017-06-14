@@ -17,9 +17,9 @@ module Identity
                         where(member_mailings: {mailing_id: mailing.id}).
                         order(:created_at).last
 
-            member_mailing_cache = Utils::member_mailing_cache(mailing.id);
+            member_mailing_cache = nil
 
-            logger.info "${i}/${synced_mailings.length} #{mailing.name} last open #{last_open.try(:created_at)}, members cache size #{member_mailing_cache.size})"
+            logger.info "#{i}/#{synced_mailings.length} #{mailing.name} last open #{last_open.try(:created_at)}, members cache size #{member_mailing_cache.size})"
 
             opens = Identity::Importer.connection.run_query(sql(mailing.external_id, last_open.try(:created_at) || 0))
             opens_count = 0
@@ -28,10 +28,14 @@ module Identity
               new_opens = []
               ActiveRecord::Base.transaction do
                 open_events.each do |open_event|
-                  member_mailing_id = member_mailing_cache[open_event['email']]
+                  email = open_event['email']
+                  next if Utils.blacklisted_email? email
+
+                  member_mailing_cache = Utils::member_mailing_cache(mailing.id) if member_mailing_cache.nil?
+                  member_mailing_id = member_mailing_cache[email]
 
                   if member_mailing_id.nil?
-                    logger.warn "SKIPPED OPEN: Couldn't find MemberMailing with email: #{open_event['email']}, mailing_id: #{mailing.id}"
+                    Utils.blacklist_email email
                     next
                   end
 

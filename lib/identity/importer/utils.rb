@@ -1,7 +1,12 @@
+require 'set'
+
 module Identity
   module Importer
     module Utils
       MemberCache = Struct.new(:id, :email_subscription_id, :unsubscribed_at)
+
+      # this is a global hash with emails of absent members we need to skip
+      MemberBlacklist = Set.new
 
       def self.format_array_for_sql array
         array.map do |value|
@@ -26,7 +31,14 @@ module Identity
           cache[member.email] = member.member_mailing_id
           cache
         end
+      end
 
+      def blacklisted_email?(email)
+        MemberBlacklist.include? email
+      end
+
+      def blacklist_email(email)
+        MemberBlacklist << email
       end
 
     end

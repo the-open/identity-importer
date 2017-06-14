@@ -17,9 +17,9 @@ module Identity
                          where(member_mailings: {mailing_id: mailing.id}).
                          order(:created_at).last
 
-            member_mailing_cache = Utils::member_mailing_cache(mailing.id)
+            member_mailing_cache = nil
 
-            logger.info "${i}/${synced_mailings.length} #{mailing.name} last click #{last_click.try(:created_at)}, members cache size #{member_mailing_cache.size})"
+            logger.info "#{i}/#{synced_mailings.length} #{mailing.name} last click #{last_click.try(:created_at)}, members cache size #{member_mailing_cache.size})"
 
             clicks = Identity::Importer.connection.run_query(sql(mailing.external_id, last_click.try(:created_at) || 0))
             clicks_count = 0
@@ -28,10 +28,14 @@ module Identity
               new_clicks = []
               ActiveRecord::Base.transaction do
                 click_events.each do |click_event|
-                  member_mailing_id = member_mailing_cache[click_event['email']]
+                  email = click_event['email']
+                  next if Utils.blacklisted_email? email
+
+                  member_mailing_cache = Utils::member_mailing_cache(mailing.id) if member_mailing_cache.nil?
+                  member_mailing_id = member_mailing_cache[email]
 
                   if member_mailing_id.nil?
-                    logger.warn "SKIPPED CLICK: Couldn't find MemberMailing with email: #{click_event['email']}, mailing_id: #{mailing.id}"
+                    Utils.blacklist_email email
                     next
                   end
 
