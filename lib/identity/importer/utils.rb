@@ -33,11 +33,11 @@ module Identity
         end
       end
 
-      def blacklisted_email?(email)
+      def self.blacklisted_email?(email)
         MemberBlacklist.include? email
       end
 
-      def blacklist_email(email)
+      def self.blacklist_email(email)
         MemberBlacklist << email
       end
 
