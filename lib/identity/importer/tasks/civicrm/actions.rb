@@ -6,7 +6,7 @@ module Identity
       module CiviCRM
         class Actions
 
-          def self.sql
+          def self.sql(last_action=nil)
             anonymize = Identity::Importer.configuration.anonymize
 
             action_types = Identity::Importer.configuration.action_types
@@ -32,7 +32,9 @@ module Identity
                       ON act.activity_type_id = act_type.activity_type_id
                   JOIN civicrm_activity_contact act_con ON act.id = act_con.activity_id
                   JOIN civicrm_email email ON email.contact_id = act_con.contact_id
-               WHERE camp.id IN (#{campaigns.join(",")});
+               WHERE camp.id IN (#{campaigns.join(",")})
+                     AND act.activity_date_time > #{ActiveRecord::Base.connection.quote(last_action)}
+               ORDER BY act.activity_date_time ASC;
             }
           end
 
