@@ -4,7 +4,7 @@ module Identity
   module Importer
     module Tasks
       module CiviCRM
-        class Actions
+        class Actions < Identity::Importer::Tasks::Actions
 
           def self.sql(last_action=nil)
             anonymize = Identity::Importer.configuration.anonymize
