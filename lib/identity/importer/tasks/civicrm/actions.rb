@@ -1,3 +1,4 @@
+require 'identity/importer/tasks/actions'
 require 'activerecord-import'
 
 module Identity
