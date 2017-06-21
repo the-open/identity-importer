@@ -51,13 +51,14 @@ module Identity
               Mailing.import new_mailings
             end
           end
-        end
 
-        # add at least 1 mailing variation per email 
-        mailings_without_variations = Mailing.joins("left join mailing_variations on mailings.id = mailing_variations.mailing_id").where("mailing_variations.id is null")
-        mailings_without_variations.each do |m| 
-          m.mailing_variations = [MailingVariation.create!]
-          m.save!
+          # add at least 1 mailing variation per email 
+          mailings_without_variations = Mailing.joins("left join mailing_variations on mailings.id = mailing_variations.mailing_id").where("mailing_variations.id is null")
+          mailings_without_variations.each do |m| 
+            m.mailing_variations = [MailingVariation.create!]
+            m.save!
+          end
+
         end
       end
     end
