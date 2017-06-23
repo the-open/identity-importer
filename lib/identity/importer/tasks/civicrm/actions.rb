@@ -15,7 +15,7 @@ module Identity
               raise ArgumentError, "Action Types is empty, please set action_types to a valid array"
             end
 
-            action_types = Identity::Importer::Utils.format_array_for_sql action_types
+            action_types_arr = Identity::Importer::Utils.format_array_for_sql action_types
             action_types_string = action_types.join(',')
 
             campaigns = Campaign.where.not(controlshift_campaign_id: nil).pluck(:controlshift_campaign_id)
@@ -30,7 +30,7 @@ module Identity
                  JOIN civicrm_activity act ON camp.id = act.campaign_id
                  JOIN (SELECT v.value as activity_type_id, v.label as activity_name
                       FROM civicrm_option_group o join civicrm_option_value v ON o.id = v.option_group_id
-                      WHERE o.name ='activity_type' AND label IN (#{action_types})) as act_type
+                      WHERE o.name ='activity_type' AND label IN (#{action_types_arr})) as act_type
                       ON act.activity_type_id = act_type.activity_type_id
                   JOIN civicrm_activity_contact act_con ON act.id = act_con.activity_id
                   JOIN civicrm_email email ON email.contact_id = act_con.contact_id
