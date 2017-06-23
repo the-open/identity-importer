@@ -9,6 +9,7 @@ module Identity
       attr_accessor :database_user
       attr_accessor :campaign_types
       attr_accessor :action_types
+      attr_accessor :action_types_map
       attr_accessor :anonymize
       attr_accessor :add_email_subscription
       attr_accessor :log_to_stdout
@@ -22,6 +23,7 @@ module Identity
         @database_user = ""
         @campaign_types = []
         @action_types = []
+        @action_types = {}
         @anonymize = false
         @add_email_subscription = false
         @log_to_stdout = false
