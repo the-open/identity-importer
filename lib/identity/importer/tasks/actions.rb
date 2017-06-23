@@ -43,7 +43,7 @@ module Identity
                   action.save!
                 end
 
-                member_action = MemberAction.find_or_initialize_by(action_id: action.id, created_at: timestamp, memnber_id: cached_member.id)
+                member_action = MemberAction.find_or_initialize_by(action_id: action.id, created_at: timestamp, member_id: cached_member.id)
 
                 if member_action.new_record?
                   new_member_actions << member_action
