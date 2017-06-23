@@ -6,11 +6,15 @@ module Identity
       class Actions
 
         def self.run
-          last_action = MemberAction.order(:created_at).last
-          actions = Identity::Importer.connection.run_query(sql(last_action.try(:created_at) || 0))
           logger = Identity::Importer.logger
+          last_action = MemberAction.order(:created_at).last
+          logger.info "Last action is #{last_action}"
 
+          actions = Identity::Importer.connection.run_query(sql(last_action.try(:created_at) || 0))
+          logger.info "Queried for actions. got #{actions.count} rows, filling cache"
+          
           got_members = Utils.member_cache
+          logger.info "Cache filled."
           got_actions = {}
           
           actions_count = actions.count
