@@ -34,7 +34,7 @@ module Identity
                 end
                 if action.new_record?
                   campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
-                  action.action_type =  action_data['type']
+                  action.action_type =  Identity::Importer.configuration.action_types_map[saction_data['type']]
                   action.campaign = campaign
                   action.save!
                 end
