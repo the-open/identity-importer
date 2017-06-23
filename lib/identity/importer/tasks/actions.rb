@@ -5,7 +5,7 @@ module Identity
     module Tasks
       class Actions
 
-        def self.run(days_young=nil)
+        def self.run
           last_action = Action.order(:created_at).last
           actions = Identity::Importer.connection.run_query(sql(last_action.try(:created_at) || 0))
           logger = Identity::Importer.logger
