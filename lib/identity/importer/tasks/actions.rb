@@ -41,6 +41,7 @@ module Identity
                   campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
                   action.action_type =  Identity::Importer.configuration.action_types_map[action_data['type']]
                   action.campaign = campaign
+                  action.name = campaign.name
                   action.save!
                 end
 
