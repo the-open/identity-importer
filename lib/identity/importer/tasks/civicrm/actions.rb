@@ -16,6 +16,7 @@ module Identity
             end
 
             action_types = Identity::Importer::Utils.format_array_for_sql action_types
+            action_types_string = action_types.join(',')
 
             campaigns = Campaign.where.not(controlshift_campaign_id: nil).pluck(:controlshift_campaign_id)
             %{
@@ -23,7 +24,7 @@ module Identity
                 #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
                  act_type.activity_name as type,
                  act.activity_date_time as created_at,
-                 act.id as external_id,
+                 camp.id << 8 | FIND_IN_SET(act_type.activity_name, '#{action_types_string}') as external_id,
                  camp.id as campaign_id
                FROM civicrm_campaign camp
                  JOIN civicrm_activity act ON camp.id = act.campaign_id

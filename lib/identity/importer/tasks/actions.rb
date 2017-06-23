@@ -11,6 +11,7 @@ module Identity
           logger = Identity::Importer.logger
 
           got_members = Utils.member_cache
+          got_actions = {}
           
           actions_count = actions.count
           done_count = 0
@@ -25,32 +26,24 @@ module Identity
                 cached_member = got_members[action_data['email']]
                 next if cached_member.nil?
 
-                action = Action.find_or_initialize_by(external_id: action_data['external_id'])
-                timestamp = action_data['created_at'].to_datetime
-                action.attributes = {
-                  action_type: action_data['type'],
-                  created_at: timestamp,
-                  updated_at: timestamp
-                }
-
-                campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
-
-                action.campaign = campaign
-
+                action_ex_id = action_data['external_id']
+                action = got_actions[action_ex_id]
+                if action.nil?
+                  action = Action.find_or_create_by(external_id: action_data['external_id'])
+                  got_actions[action_ex_id] = action
+                end
                 if action.new_record?
-                  new_actions << action
-                elsif action.changed?
+                  campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
+                  action.action_type =  action_data['type']
+                  action.campaign = campaign
                   action.save!
                 end
 
-                member_action = MemberAction.find_or_initialize_by(action_id: action.id, created_at: timestamp, member_id: cached_member.id)
+                timestamp = action_data['created_at'].to_datetime
+                member_action = MemberAction.new(action_id: action.id, created_at: timestamp, member_id: cached_member.id)
 
-                if member_action.new_record?
-                  new_member_actions << member_action
-                  logger.debug "Importing MemberAction with id #{member_action.id}"
-                end
+                new_member_actions << member_action
               end
-              Action.import new_actions
               MemberAction.import new_member_actions
               logger.info "syncing actions #{done_count}/#{actions_count}"
             end
