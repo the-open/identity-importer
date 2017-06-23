@@ -6,7 +6,7 @@ module Identity
       class Actions
 
         def self.run
-          last_action = Action.order(:created_at).last
+          last_action = MemberAction.order(:created_at).last
           actions = Identity::Importer.connection.run_query(sql(last_action.try(:created_at) || 0))
           logger = Identity::Importer.logger
 
