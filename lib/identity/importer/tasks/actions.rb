@@ -29,7 +29,7 @@ module Identity
                 action_ex_id = action_data['external_id']
                 action = got_actions[action_ex_id]
                 if action.nil?
-                  action = Action.find_or_create_by(external_id: action_data['external_id'])
+                  action = Action.find_or_initialize_by(external_id: action_data['external_id'])
                   got_actions[action_ex_id] = action
                 end
                 if action.new_record?
