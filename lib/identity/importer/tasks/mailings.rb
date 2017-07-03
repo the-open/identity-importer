@@ -41,6 +41,9 @@ module Identity
                 mailing.recipients_synced = false
 
                 if mailing.new_record?
+                  unless mailing.valid?
+                    logger.debug "Mailing invalid! #{mailing.errors}"
+                  end
                   new_mailings << mailing
                   logger.debug "Importing Mailing with subject #{mailing.subject}"
                 elsif mailing.changed?
