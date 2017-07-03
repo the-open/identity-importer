@@ -42,12 +42,13 @@ module Identity
 
                 if mailing.new_record?
                   new_mailings << mailing
-                  logger.debug "Importing Mailing with id #{mailing.id}"
+                  logger.debug "Importing Mailing with subject #{mailing.subject}"
                 elsif mailing.changed?
                   mailing.save!
                   logger.debug "Updating Mailing with id #{mailing.id}"
                 end
               end
+              logger.debug "Batch importing #{new_mailings.length} mailings"
               Mailing.import new_mailings
             end
           end
