@@ -42,9 +42,10 @@ module Identity
 
                 if mailing.new_record?
                   unless mailing.valid?
-                    logger.debug "Mailing invalid! #{mailing.errors.messages}"
+                    logger.debug "Mailing (external_id=#{mailing.external_id}) invalid! #{mailing.errors.messages}"
+                  else
+                    new_mailings << mailing
                   end
-                  new_mailings << mailing
                   logger.debug "Importing Mailing with subject #{mailing.subject}"
                 elsif mailing.changed?
                   mailing.save!

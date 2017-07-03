@@ -9,6 +9,12 @@ module Identity
           def self.sql
             last_mailing = Mailing.where.not(external_id: nil).order("external_id desc").first
 
+            unless last_mailing.nil?
+              condition = "AND mailing.id > #{last_mailing.external_id}"
+            else
+              condition = ''
+            end
+
             %{
               SELECT mailing.name,
                 mailing.id as external_id,
@@ -27,7 +33,7 @@ module Identity
                 FROM civicrm_mailing mailing LEFT JOIN civicrm_mailing_job job ON mailing.id = job.mailing_id
                 LEFT JOIN  civicrm_mailing_event_queue q ON q.job_id = job.id
                 WHERE job.job_type = 'child'
-                #{"AND mailing.id > #{last_mailing.external_id}" unless last_mailing.nil?}
+                #{condition}
                 GROUP BY mailing.id
             }
           end
