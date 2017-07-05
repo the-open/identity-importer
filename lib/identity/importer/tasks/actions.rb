@@ -22,7 +22,6 @@ module Identity
           actions.each_slice(1000) do |action_events|
             logger.info "start slice"
             ActiveRecord::Base.transaction do
-              new_actions = []
               new_member_actions = []
 
               action_events.each do |action_data|
@@ -51,7 +50,7 @@ module Identity
                 new_member_actions << member_action
               end
               MemberAction.import new_member_actions
-              logger.info "syncing actions #{done_count}/#{actions_count}"
+              logger.info "syncing actions #{done_count}/#{actions_count}, imported from batch: #{new_member_actions.length}/1000"
             end
           end
 
