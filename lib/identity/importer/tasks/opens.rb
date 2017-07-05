@@ -49,6 +49,7 @@ module Identity
                 end
                 opens_count += new_opens.length
                 Open.import new_opens
+                logger.info "Imported #{opens_count} (new Open count in this batch is #{new_opens.length}/1000)"
               end
             end
             if opens_count > 0
