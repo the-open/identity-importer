@@ -10,11 +10,11 @@ module Identity
 
           if sync_since.nil?
             last_action = MemberAction.order(:created_at).last
-            sync_since = last_action.try(:created_at) || 0)
+            sync_since = last_action.try(:created_at) || 0
           end
           logger.info "Sync Actions since #{sync_since}"
 
-          actions = Identity::Importer.connection.run_query(sql(sync_since) || 0))
+          actions = Identity::Importer.connection.run_query(sql(sync_since))
           logger.info "Queried for actions. got #{actions.count} rows, filling cache"
           
           got_members = Utils.member_cache
