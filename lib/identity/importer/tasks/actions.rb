@@ -62,6 +62,11 @@ module Identity
 
         end
 
+        def self.dedupe
+          duplicated_ids = MemberAction.group(:action_id, :member_id, :created_at).having('count(*) > 1').select('max(id) as id').pluck(:id)
+          MemberAction.where(id: duplicated_ids).delete_all
+        end
+
       end
     end
   end
