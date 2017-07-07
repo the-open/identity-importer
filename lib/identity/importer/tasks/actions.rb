@@ -5,12 +5,16 @@ module Identity
     module Tasks
       class Actions
 
-        def self.run
+        def self.run(sync_since=nil)
           logger = Identity::Importer.logger
-          last_action = MemberAction.order(:created_at).last
-          logger.info "Last action is #{last_action}"
 
-          actions = Identity::Importer.connection.run_query(sql(last_action.try(:created_at) || 0))
+          if sync_since.nil?
+            last_action = MemberAction.order(:created_at).last
+            sync_since = last_action.try(:created_at) || 0)
+          end
+          logger.info "Sync Actions since #{sync_since}"
+
+          actions = Identity::Importer.connection.run_query(sql(sync_since) || 0))
           logger.info "Queried for actions. got #{actions.count} rows, filling cache"
           
           got_members = Utils.member_cache
@@ -51,6 +55,8 @@ module Identity
               end
               MemberAction.import new_member_actions
               logger.info "syncing actions #{done_count}/#{actions_count}, imported from batch: #{new_member_actions.length}/1000"
+
+              ## XXX deduplicate
             end
           end
 
