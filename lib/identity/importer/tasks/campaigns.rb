@@ -14,9 +14,10 @@ module Identity
 
             campaigns.each do |campaign_data|
               campaign = Campaign.find_or_initialize_by(name: campaign_data['name'])
+              issue = Issue.find_or_create_by name: campaign_data['type']
               campaign.attributes = {
                 controlshift_campaign_id: campaign_data['external_id'],
-                campaign_type: campaign_data['type']
+                issue_id: issue.id
               }
 
               if campaign.new_record?
