@@ -17,7 +17,7 @@ module Identity
           got_members = Utils::member_cache
           Padrino.logger.info "Loading member cache done (#{got_members.size} of them)"
           already_added_emails = Set.new
-          members = Identity::Importer.connection.run_query(sql, sync_since)
+          members = Identity::Importer.connection.run_query(sql(sync_since))
 
           email_subscription = Subscription.find(Subscription::EMAIL_SUBSCRIPTION)
           if Identity::Importer.configuration.add_email_subscription and email_subscription.nil?
