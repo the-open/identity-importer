@@ -7,7 +7,7 @@ module Identity
         class Campaigns < Identity::Importer::Tasks::Campaigns
 
           def self.sql
-            last_campaign = Campaign.where.not(controlshift_campaign_id: nil).order("controlshift_campaign_id desc").first
+            last_campaign =  Campaign.where(campaign_type: nil).where.not(controlshift_campaign_id: nil).order("controlshift_campaign_id desc").first
             campaign_types = Identity::Importer.configuration.campaign_types
             if campaign_types.blank?
               raise ArgumentError, "Campaign Types is empty, please set campaign_types to a valid array"
