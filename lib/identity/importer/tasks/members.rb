@@ -5,14 +5,19 @@ module Identity
     module Tasks
       class Members
 
-        def self.run
+        def self.run(sync_since=nil)
           logger = Identity::Importer.logger
+
+          if sync_since.nil?
+            last_member = Member.where(crypted_password: nil).order("created_at desc").first
+            sync_since = last_member.try(:created_at) || 0
+          end
 
           Padrino.logger.info "Loading member cache"
           got_members = Utils::member_cache
           Padrino.logger.info "Loading member cache done (#{got_members.size} of them)"
           already_added_emails = Set.new
-          members = Identity::Importer.connection.run_query(sql)
+          members = Identity::Importer.connection.run_query(sql, sync_since)
 
           email_subscription = Subscription.find(Subscription::EMAIL_SUBSCRIPTION)
           if Identity::Importer.configuration.add_email_subscription and email_subscription.nil?

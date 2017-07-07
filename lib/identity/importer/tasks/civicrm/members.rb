@@ -6,8 +6,14 @@ module Identity
       module CiviCRM
         class Members < Identity::Importer::Tasks::Members
 
-          def self.sql
-            last_member = Member.where(crypted_password: nil).order("created_at desc").first
+          def self.sql(sync_since=nil)
+            if sync_since
+              where_when = "AND contact.created_date > " + Identity::Importer.connection.quote(sync_since)
+            else
+              where_when = ''
+            end
+            
+
             anonymize = Identity::Importer.configuration.anonymize
             %{
               SELECT
@@ -21,7 +27,7 @@ module Identity
                 FROM civicrm_email email JOIN civicrm_contact contact ON email.contact_id = contact.id
                 LEFT JOIN civicrm_address addr ON contact.id = addr.contact_id
                 WHERE is_deleted = 0 AND is_opt_out = 0
-                #{"AND contact.created_date > \"#{last_member.created_at.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\"" unless last_member.nil?}
+                #{where_when}
                 ORDER BY contact.created_date ASC
             }
 
