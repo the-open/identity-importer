@@ -8,7 +8,7 @@ module Identity
 
           def self.sql(sync_since=nil)
             if sync_since
-              where_when = "AND contact.created_date > \"#{sync_since.getlocal.strftime('%Y-%m-%d %H:%M:%S')}\""
+              where_when = "AND contact.created_date > \"#{sync_since.strftime('%Y-%m-%d %H:%M:%S')}\""
             else
               where_when = ''
             end
