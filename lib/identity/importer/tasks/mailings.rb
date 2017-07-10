@@ -63,6 +63,10 @@ module Identity
             MailingVariation.create! mailing_id: m.id
           end
 
+          Mailing.where(parsed_html: nil).each do |m|
+            m.rebuild(m.body_html)
+          end
+
         end
       end
     end
