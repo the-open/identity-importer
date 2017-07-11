@@ -26,7 +26,7 @@ module Identity
                 #{anonymize ? "concat(sha1(email.email), '@civi.crm')" : "email.email"} as email,
                  act_type.activity_name as type,
                  act.activity_date_time as created_at,
-                 camp.externl_identifier  as external_id,
+                 camp.external_identifier  as external_id,
                  camp.id as campaign_id
                FROM civicrm_campaign camp
                  JOIN civicrm_activity act ON camp.id = act.campaign_id
