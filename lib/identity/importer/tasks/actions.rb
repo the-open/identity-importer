@@ -35,14 +35,18 @@ module Identity
                 next if cached_member.nil?
 
                 action_ex_id = action_data['external_id']
-                action = got_actions[action_ex_id]
+                action_type = Identity::Importer.configuration.action_types_map[action_data['type']]
+
+                action = got_actions["#{action_ex_id}:#{action_type}"]
                 if action.nil?
-                  action = Action.find_or_initialize_by(external_id: action_data['external_id'])
-                  got_actions[action_ex_id] = action
+                  action = Action.find_or_initialize_by({
+                                                          external_id: action_data['external_id'],
+                                                          action_type: action_type
+                                                        })
+                  got_actions["#{action_ex_id}:#{action_type}"] = action
                 end
                 if action.new_record?
                   campaign = Campaign.find_by(controlshift_campaign_id: action_data['campaign_id'])
-                  action.action_type =  Identity::Importer.configuration.action_types_map[action_data['type']]
                   action.campaign = campaign
                   action.name = campaign.name
                   action.save!
