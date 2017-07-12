@@ -9,7 +9,7 @@ module Identity
           logger = Identity::Importer.logger
           synced_mailings = Mailing.where(recipients_synced: true)
           unless days_young.nil?
-            synced_mailings = synced_mailings.where("created_at >= ?", Date.today-days_young.days)
+            synced_mailings = synced_mailings.where("created_at >= ?", Date.today-days_young.days).order("created_at desc")
           end
 
           synced_mailings.each_with_index do |mailing, i|
